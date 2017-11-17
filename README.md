@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-This project requires at least [Python](https://www.python.org) 3.6.0 installed.
+This project requires at least [Python](https://www.python.org) 3.6.0 installed and a running [MySQL](https://www.mysql.com) instance.
 
 ## Installing
 
@@ -14,10 +14,11 @@ Admitting you invoke python using `python3.6`, install the required dependencies
 python3.6 -m pip install -r requirements.txt
 ```
 
-You'll also need to set the Facebook app id and app secret :
+You'll also need to set some parameters :
 
-- The Facebook App ID should be set in the **variable** [`OAUTH2_CLIENT_ID` in server.py](server.py).
-- The Facebook App Secret should be stores in an **environment variable** as `COLLECTSERVER_FACEBOOKSECRET`.
+- Rename the **file** `config.ini.example` to `config.ini` and fill in the informations to connect to your MySQL database.
+- Set the Facebook App ID the **variable** [`OAUTH2_CLIENT_ID` in server.py](server.py#L20).
+- Set the Facebook App Secret in an **environment variable** named `COLLECTSERVER_FACEBOOKSECRET`.
 
 <!-- No tests yet : This will be useful later
 
