@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+{% include 'partials/head.html' %}
+
+<body>
+
+{% include 'partials/navbar.html' %}
+
+<div class="page-content">
+    <div class="wrapper">
+        <div class="container">
+            {% if infoMessage %}
+            <div class="alert alert-info alert-dismissible show" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                {{ infoMessage }}
+            </div>
+            {% endif %}
+            {% if warningMessage %}
+            <div class="alert alert-warning alert-dismissible show" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                {{ warningMessage }}
+            </div>
+            {% endif %}
+            {% if contentTemplate %}
+                {% include contentTemplate %}
+            {% else %}
+                {{ content }}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted">collect-server sources available on <a href="https://github.com/SDIPI/SDIPI.github.io">GitHub</a></p>
+    </div>
+</footer>
+
+<script>
+    var baseurl = ''
+</script>
+
+</body>
+
+</html>
