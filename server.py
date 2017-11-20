@@ -64,7 +64,7 @@ def getHTML(url: str, wdfId: str, connection: MySQL):
 
 def mysqlConnection() -> MySQL:
     return MySQL(current_app.config['DB_HOST'], current_app.config['DB_USER'], current_app.config['DB_PASS'],
-                 'wdf')
+                 current_app.config['DB_NAME'])
 
 def idOfToken(token):
     wdfId = None
@@ -235,12 +235,13 @@ def check_auth(user):
         abort(401, "Missing user")
 
 
-def run(ip="127.0.0.1", port=5000, db_host='localhost', db_user='collectserver', db_pass='collectserver'):
+def run(ip, port, db_host, db_user, db_pass, db_name):
     app.config['DB_HOST'] = db_host
     app.config['DB_USER'] = db_user
     app.config['DB_PASS'] = db_pass
+    app.config['DB_NAME'] = db_name
 
-    connection = MySQL(db_host, db_user, db_pass, 'wdf')
+    connection = MySQL(db_host, db_user, db_pass, db_name)
     with connection as test:
         pass
 

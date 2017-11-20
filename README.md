@@ -37,8 +37,8 @@ Give an example
 
 ## Deployment
 
-Simply run `server.py` :
+Simply run `wdf-server.py` :
 
 ```
-python 3.6 server.py
+python 3.6 wdf-server.py
 ```
