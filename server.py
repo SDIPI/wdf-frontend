@@ -142,6 +142,20 @@ def authsuccess():
     # return render_template("layout.html", contentTemplate="loginsuccess.html", userName=user['name'], userId=user['id'])
     return render_template("layout.html", contentTemplate="loginsuccess.html", userName='user', userId='id')
 
+
+@app.route("/profile")  # User's profile page
+def profile():
+    if request.values.get('error'):
+        return request.values['error']
+    mysql = mysqlConnection()
+    with mysql as db:
+        allUsers = db.getUsers()
+        users = {}
+        for user in allUsers:
+            users[user['wdfId']] = user
+
+    return render_template("layout.html", contentTemplate="loginsuccess.html", userName='user', userId='id')
+
 @app.route("/collect", methods=['POST'])  # Call from script
 def collect():
     if request.values.get('error'):
