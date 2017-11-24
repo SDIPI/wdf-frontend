@@ -56,6 +56,10 @@ app.config['SECRET_KEY'] = OAUTH2_CLIENT_SECRET
 
 
 def getHTML(url: str, wdfId: str, connection: MySQL):
+    with connection as db:
+        lastDay = db.getLastDayContentsSQL(url)
+    if not lastDay:
+        return
     if "http://" in url or "https://" in url:
         htmlContent = requests.get(url)
         with connection as db:
@@ -154,7 +158,7 @@ def profile():
         for user in allUsers:
             users[user['wdfId']] = user
 
-    return render_template("layout.html", contentTemplate="loginsuccess.html", userName='user', userId='id')
+    return render_template("layout.html", contentTemplate="profile.html", userName='user', userId='id')
 
 @app.route("/collect", methods=['POST'])  # Call from script
 def collect():
