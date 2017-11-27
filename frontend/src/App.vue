@@ -44,8 +44,17 @@
 </template>
 
 <script>
+  import ProfileStore from "./stores/ProfileStore";
   export default {
-    name: 'app'
+    name: 'app',
+    data() {
+      return {
+        ProfileStore: ProfileStore.data
+      };
+    },
+    mounted() {
+      ProfileStore.methods.refreshVisitedSites();
+    }
   }
 </script>
 

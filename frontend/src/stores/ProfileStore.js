@@ -1,10 +1,17 @@
 const ProfileStore = {
   data: {
-    test: [1,2,3]
+    apiBase: "http://df.sdipi.ch:5000",
+    visitedSites: []
   },
   methods: {
-    addNumber(number) {
-      ProfileStore.data.friends.push(number);
+    refreshVisitedSites() {
+      fetch(ProfileStore.data.apiBase + "/api/mostVisitedSites")
+        .then(response => response.json())
+        .then((data) => {
+          var sorted = data.sort((a, b) => {return (b['count'] - a['count'])}).slice(0, 10);
+          console.log(sorted);
+          ProfileStore.data.visitedSites = sorted;
+        })
     }
   }
 };

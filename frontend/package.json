@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
-    "build": "node build/build.js && cp -R dist/static/* ../static/"
+    "build": "node build/build.js && cp -R dist/static/* ../static/ && cp dist/index.html ../static/index.html"
   },
   "dependencies": {
     "vue": "^2.5.2",

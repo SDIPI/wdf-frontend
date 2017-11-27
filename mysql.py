@@ -99,7 +99,7 @@ class MySQL:
 
     def getLastDayContentsSQL(self, url):
         with self.db.cursor(pymysql.cursors.DictCursor) as db:
-            db.execute(getLastDayContentsSQL)
+            db.execute(getLastDayContentsSQL, (url))
             contents = db.fetchall()
         self.db.commit()
         return contents

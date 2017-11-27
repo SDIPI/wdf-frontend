@@ -71,6 +71,8 @@ def mysqlConnection() -> MySQL:
                  current_app.config['DB_NAME'])
 
 def idOfToken(token):
+    if token is None:
+        return None
     wdfId = None
     for wdfId in users:
         if users[wdfId]['wdfToken'] == token:
