@@ -29,7 +29,9 @@
     </nav>
 
     <div class="container">
-      <router-view/>
+      <router-view v-if="ProfileStore.connected"/>
+      <div v-if="ProfileStore.connected === null">Connecting...</div>
+      <div v-if="ProfileStore.connected == false">You're not connected.</div>
     </div>
 
     <hr>
@@ -53,7 +55,11 @@
       };
     },
     mounted() {
-      ProfileStore.methods.refreshVisitedSites();
+      ProfileStore.methods.connectionState().then(() => {
+        if (ProfileStore.data.connected) {
+          ProfileStore.methods.refreshVisitedSites();
+        }
+      });
     }
   }
 </script>

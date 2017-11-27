@@ -6,6 +6,8 @@ This file is part of wdf-server.
 import os
 from threading import Thread
 
+from functools import wraps
+
 import requests
 import secrets
 from flask import Flask, render_template, request, session, redirect, abort, current_app, Response, jsonify
@@ -33,6 +35,15 @@ if 'http://' in OAUTH2_REDIRECT_URI:
 def token_updater(token):
     session['oauth2_token'] = token
 
+
+def apiMethod(method):
+    @wraps(method)
+    def withCORS(*args, **kwds):
+        response = method(*args, **kwds)
+        response.headers['Access-Control-Allow-Origin'] = request.environ['HTTP_ORIGIN']
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        return response
+    return withCORS
 
 def facebook_session(token=None, state=None):
     return OAuth2Session(
@@ -217,6 +228,7 @@ def collectEvent():
     return resp
 
 @app.route("/api/mostVisitedSites", methods=['GET'])  # Call from interface
+@apiMethod
 def mostVisitedSites():
     if request.values.get('error'):
         return request.values['error']
@@ -224,11 +236,31 @@ def mostVisitedSites():
     wdfToken = request.cookies.get('wdfToken')
     mysql = mysqlConnection()
     wdfId = idOfToken(wdfToken)
+    if wdfId is None:
+        resp = jsonify({'error': "Not connected"})
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp
     with mysql as db:
         mostVisited = db.getMostVisitedSites(wdfId)
 
     resp = jsonify(mostVisited)
-    resp.headers['Access-Control-Allow-Origin'] = '*'
+
+    return resp
+
+@app.route("/api/connectionState", methods=['GET'])  # Call from interface
+@apiMethod
+def connectionState():
+    if request.values.get('error'):
+        return request.values['error']
+
+    wdfToken = request.cookies.get('wdfToken')
+    mysql = mysqlConnection()
+    wdfId = idOfToken(wdfToken)
+    if wdfId is None:
+        resp = jsonify({'error': "Not connected"})
+        return resp
+
+    resp = jsonify({'success': "Connected", "wdfId": wdfId})
 
     return resp
 
