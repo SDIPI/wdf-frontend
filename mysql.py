@@ -5,24 +5,30 @@ This file is part of wdf-server.
 """
 import pymysql as pymysql
 
+# Collect SQL
 pageviewSQL = 'INSERT INTO pageviews (wdfId, url, timestamp) VALUES (%s, %s, CURRENT_TIMESTAMP)'
 pagerequestSQL = 'INSERT INTO pagerequests (wdfId, url, timestamp, request, method) VALUES (%s, %s, CURRENT_TIMESTAMP, %s, %s)'
 pageeventSQL = 'INSERT INTO `event` (wdfId, url, type, `value`) VALUES (%s, %s, %s, %s)'
 contentSQL = 'INSERT INTO `content` (wdfId, url, timestamp, `content`) VALUES (%s, %s, CURRENT_TIMESTAMP, %s)'
 
+# Collect Server SQL
 getUsersSQL = 'SELECT * FROM `users`'
 getContentsSQL = 'SELECT * FROM `content`'
-getLastDayContentsSQL = 'SELECT `id`, `wdfId`, `url`, `timestamp` FROM `content` WHERE url LIKE CONCAT(%s , '%') AND timestamp >= DATE_ADD(NOW(), INTERVAL -1 DAY)'
+getLastDayContentsSQL = 'SELECT `id`, `wdfId`, `url`, `timestamp` FROM `content` WHERE url LIKE CONCAT(%s , \'%\') AND timestamp >= DATE_ADD(NOW(), INTERVAL -1 DAY)'
 
 newuserSQL = 'INSERT INTO users (wdfId, facebookAccessToken, wdfToken) VALUES ("%s", "%s", "%s")'
 
 newOrUpdateuserSQL = "INSERT INTO users (facebookId, facebookAccessToken, wdfToken) VALUES (%(fbId)s, %(fbToken)s, %(wdfToken)s) ON DUPLICATE KEY UPDATE facebookId = %(fbId)s, facebookAccessToken = %(fbToken)s, wdfToken = %(wdfToken)s"
 
+# Compute SQL
 emptyTfTableSQL = "TRUNCATE computed_tf"
 emptyDfTableSQL = "TRUNCATE computed_df"
 
 tfSQL = 'INSERT IGNORE INTO `computed_tf` (url, word, tf) VALUES (%s, %s, %s)'
 dfSQL = 'INSERT IGNORE INTO `computed_df` (word, df) VALUES (%s, %s)'
+
+# Interface SQL
+mostVisitedSitesSQL = 'SELECT url, COUNT(*) AS count FROM `pageviews` WHERE `wdfId`=%s GROUP BY `url`'
 
 class MySQL:
     def __init__(self, host, user, password, dbname='connectserver'):
@@ -122,3 +128,10 @@ class MySQL:
         with self.db.cursor() as db:
             db.executemany(dfSQL, list)
         self.db.commit()
+
+    def getMostVisitedSites(self, wdfId):
+        with self.db.cursor(pymysql.cursors.DictCursor) as db:
+            db.execute(mostVisitedSitesSQL, (wdfId))
+            mostVisitedSites = db.fetchall()
+        self.db.commit()
+        return mostVisitedSites

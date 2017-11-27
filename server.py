@@ -8,7 +8,7 @@ from threading import Thread
 
 import requests
 import secrets
-from flask import Flask, render_template, request, session, redirect, abort, current_app, Response
+from flask import Flask, render_template, request, session, redirect, abort, current_app, Response, jsonify
 from flask_cors import CORS
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import MissingCodeError
@@ -123,7 +123,9 @@ def auth():
         with mysqlConnection() as db:
             db.newOrUpdateUser(user['id'], token['access_token'], wdf_token)
 
-        return redirect('/authsuccess?code=' + wdf_token)
+        response = redirect('/authsuccess?code=' + wdf_token)
+        response.set_cookie('wdfToken', wdf_token)
+        return response
 
     except MissingCodeError:
         return render_template("layout.html", warningMessage="Missing code.")
@@ -143,7 +145,6 @@ def authsuccess():
         for user in allUsers:
             users[user['wdfId']] = user
 
-    # return render_template("layout.html", contentTemplate="loginsuccess.html", userName=user['name'], userId=user['id'])
     return render_template("layout.html", contentTemplate="loginsuccess.html", userName='user', userId='id')
 
 
@@ -209,6 +210,22 @@ def collectEvent():
         db.pageEvent(wdfId, data['url'], data['type'], data['value'])
 
     resp = Response('{"result":"ok"}')
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+
+    return resp
+
+@app.route("/api/mostVisitedSites", methods=['GET'])  # Call from interface
+def mostVisitedSites():
+    if request.values.get('error'):
+        return request.values['error']
+
+    wdfToken = request.cookies.get('wdfToken')
+    mysql = mysqlConnection()
+    wdfId = idOfToken(wdfToken)
+    with mysql as db:
+        mostVisited = db.getMostVisitedSites(wdfId)
+
+    resp = jsonify(mostVisited)
     resp.headers['Access-Control-Allow-Origin'] = '*'
 
     return resp
