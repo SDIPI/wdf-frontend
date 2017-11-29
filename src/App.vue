@@ -47,6 +47,7 @@
 
 <script>
   import ProfileStore from "./stores/ProfileStore";
+  import "./filters";
   export default {
     name: 'app',
     data() {
@@ -58,6 +59,7 @@
       ProfileStore.methods.connectionState().then(() => {
         if (ProfileStore.data.connected) {
           ProfileStore.methods.refreshVisitedSites();
+          ProfileStore.methods.refreshWatchedSites();
         }
       });
     }

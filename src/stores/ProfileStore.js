@@ -27,6 +27,15 @@ const ProfileStore = {
           console.log(sorted);
           ProfileStore.data.visitedSites = sorted;
         });
+    },
+    refreshWatchedSites() {
+      fetch(ProfileStore.data.apiBase + "/api/mostWatchedSites", {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          let sorted = data.sort((a, b) => {return (b['time'] - a['time'])}).slice(0, 10);
+          console.log(sorted);
+          ProfileStore.data.watchedSites = sorted;
+        });
     }
   }
 };

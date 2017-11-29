@@ -16,52 +16,14 @@
     </div>
     <div class="row">
       <div class="col">
-        <h2>Most visited sites ({{ProfileStore.visitedSites.length}})</h2>
-        <table class="table">
-          <thead>
-          <tr>
-            <th>#</th>
-            <th>Site</th>
-            <th># Pages</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="(site, index) in ProfileStore.visitedSites">
-            <th scope="row">{{index+1}}</th>
-            <td>{{site.url}}</td>
-            <td>{{site.count}}</td>
-          </tr>
-          </tbody>
-        </table>
+        <h2>Most visited pages</h2>
+        <TableList :list="ProfileStore.visitedSites" :labels="['Page', 'Views']" :displayF="(function (data) {return [data.url, data.count];})" />
       </div>
+    </div>
+    <div class="row">
       <div class="col">
-        <h2>Most watched sites</h2>
-        <table class="table">
-          <thead>
-          <tr>
-            <th>#</th>
-            <th>Site</th>
-            <th># Pages</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>youtube.com</td>
-            <td>2123</td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>reddit.com</td>
-            <td>1429</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td>stackoverflow.com</td>
-            <td>813</td>
-          </tr>
-          </tbody>
-        </table>
+        <h2>Most watched pages</h2>
+        <TableList :list="ProfileStore.watchedSites" :labels="['Page', 'Seconds']" :displayF="(function (data) {return [data.url, this.$options.filters.toTime(data.time)];})" />
       </div>
     </div>
     <div class="row">
@@ -77,8 +39,13 @@
 
 <script>
 import ProfileStore from "../stores/ProfileStore";
+import TableList from "./TableList.vue";
 
 export default {
+  name: 'Profile',
+  components: {
+    TableList
+  },
   data() {
     return {
       ProfileStore: ProfileStore.data
