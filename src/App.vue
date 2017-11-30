@@ -11,8 +11,8 @@
 
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-            <li class="nav-item active">
-              <router-link class="nav-link" to="general">General</router-link>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/">General</router-link>
             </li>
             <li class="nav-item">
               <router-link class="nav-link" to="trackers">Trackers</router-link>
@@ -73,5 +73,9 @@
 
   img.logo {
     max-height: 44px;
+  }
+
+  a.router-link-exact-active {
+    color: #fff !important;
   }
 </style>

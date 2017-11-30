@@ -1,21 +1,23 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
 import Profile from '@/components/Profile'
+import General from '@/components/General'
+import Trackers from '@/components/Trackers'
+import Stats from '@/components/Stats'
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   routes: [
     {
       path: '/',
       name: 'General',
-      component: HelloWorld
+      component: General
     },
     {
       path: '/trackers',
       name: 'Trackers',
-      component: HelloWorld
+      component: Trackers
     },
     {
       path: '/profile',
@@ -25,7 +27,7 @@ export default new Router({
     {
       path: '/stats',
       name: 'Stats',
-      component: HelloWorld
+      component: Stats
     },
   ]
 })

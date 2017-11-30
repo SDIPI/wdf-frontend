@@ -6,7 +6,7 @@ Vue.filter('toTime', function (sec) {
   }
   let min = ~~(sec/60);
   if (min < 60) {
-    return `${min}min ${sec - min*60}sec`;
+    return `${min}min ${sec - min*60}sec`;
   }
   let hr = ~~(min/60);
   if (hr < 24) {
