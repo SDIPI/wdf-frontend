@@ -17,13 +17,25 @@
     <div class="row">
       <div class="col">
         <h2>Most visited pages</h2>
-        <TableList :list="ProfileStore.visitedSites" :labels="['Page', 'Views']" :displayF="(function (data) {return [data.url, data.count];})" />
+        <BarList :list="ProfileStore.visitedSites" :labels="['Page', 'Views']" :keyLabel="'url'" :keyValue="'count'" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <h2>Most visited domains</h2>
+        <BarList :list="ProfileStore.visitedDomains" :labels="['Page', 'Views']" :keyLabel="'domain'" :keyValue="'count'" />
       </div>
     </div>
     <div class="row">
       <div class="col">
         <h2>Most watched pages</h2>
-        <TableList :list="ProfileStore.watchedSites" :labels="['Page', 'Seconds']" :displayF="(function (data) {return [data.url, this.$options.filters.toTime(data.time)];})" />
+        <BarList :list="ProfileStore.watchedSites" :labels="['Page', 'Time']" :keyLabel="'url'" :keyValue="'time'" :valueF="(function(data) {return this.$options.filters.toTime(data);})"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <h2>Most watched domains</h2>
+        <BarList :list="ProfileStore.watchedDomains" :labels="['Page', 'Time']" :keyLabel="'domain'" :keyValue="'time'" :valueF="(function(data) {return this.$options.filters.toTime(data);})"/>
       </div>
     </div>
     <div class="row">
@@ -39,12 +51,14 @@
 
 <script>
 import ProfileStore from "../stores/ProfileStore";
+import BarList from "./BarList.vue";
 import TableList from "./TableList.vue";
 
 export default {
   name: 'Profile',
   components: {
-    TableList
+    TableList,
+    BarList
   },
   data() {
     return {

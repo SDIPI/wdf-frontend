@@ -1,7 +1,23 @@
+function groupBy(xs, key) {
+  return xs.reduce(function (rv, x) {
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  }, {});
+}
+
+function parseUrl(url, part) {
+  let parser = document.createElement('a');
+  parser.href = url;
+  return parser[part];
+}
+
 const ProfileStore = {
   data: {
     apiBase: "http://df.sdipi.ch:5000",
     visitedSites: [],
+    visitedDomains: [],
+    watchedSites: [],
+    watchedDomains: [],
     connected: null,
     wdfId: -1
   },
@@ -23,18 +39,58 @@ const ProfileStore = {
       fetch(ProfileStore.data.apiBase + "/api/mostVisitedSites", {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
-          let sorted = data.sort((a, b) => {return (b['count'] - a['count'])}).slice(0, 10);
-          console.log(sorted);
-          ProfileStore.data.visitedSites = sorted;
+          // Compute domains
+          let domains = {};
+          let domainsList = [];
+          data.map((el) => {
+            let domain = parseUrl(el.url, "hostname");
+            if (domain in domains) {
+              domains[domain] += el['count'];
+            } else {
+              domains[domain] = el['count'];
+            }
+          });
+          for (let domain in domains) {
+            domainsList.push({domain: domain, count: domains[domain]});
+          }
+          // Sort and truncate data
+          let sortedUrls = data.sort((a, b) => {
+            return (b['count'] - a['count'])
+          }).slice(0, 10);
+          let sortedDomains = domainsList.sort((a, b) => {
+            return (b['count'] - a['count'])
+          }).slice(0, 10);
+          ProfileStore.data.visitedSites = sortedUrls;
+          ProfileStore.data.visitedDomains = sortedDomains;
         });
     },
     refreshWatchedSites() {
       fetch(ProfileStore.data.apiBase + "/api/mostWatchedSites", {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
-          let sorted = data.sort((a, b) => {return (b['time'] - a['time'])}).slice(0, 10);
-          console.log(sorted);
-          ProfileStore.data.watchedSites = sorted;
+          // Compute domains
+          let domains = {};
+          let domainsList = [];
+          data.map((el) => {
+            let domain = parseUrl(el.url, "hostname");
+            if (domain in domains) {
+              domains[domain] += el.time;
+            } else {
+              domains[domain] = el.time;
+            }
+          });
+          for (let domain in domains) {
+            domainsList.push({domain: domain, time: domains[domain]});
+          }
+          // Sort and truncate data
+          let sortedUrls = data.sort((a, b) => {
+            return (b['time'] - a['time'])
+          }).slice(0, 10);
+          let sortedDomains = domainsList.sort((a, b) => {
+            return (b['time'] - a['time'])
+          }).slice(0, 10);
+          ProfileStore.data.watchedSites = sortedUrls;
+          ProfileStore.data.watchedDomains = sortedDomains;
         });
     }
   }
