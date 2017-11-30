@@ -55,14 +55,16 @@
         ProfileStore: ProfileStore.data
       };
     },
-    mounted() {
+    beforeMount() {
       ProfileStore.methods.connectionState().then(() => {
         if (ProfileStore.data.connected) {
-          ProfileStore.methods.refreshVisitedSites();
-          ProfileStore.methods.refreshWatchedSites();
-          ProfileStore.methods.refreshNbDocuments().then(() => {
-            ProfileStore.methods.refreshTfIdf();
-          })
+          let visitedSitesP = ProfileStore.methods.refreshVisitedSites();
+          let watchedSitesP = ProfileStore.methods.refreshWatchedSites();
+          Promise.all([visitedSitesP, watchedSitesP]).then(() => {
+            ProfileStore.methods.refreshNbDocuments().then(() => {
+              ProfileStore.methods.refreshTfIdf();
+            });
+          });
         }
       });
     }

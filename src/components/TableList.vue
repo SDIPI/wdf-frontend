@@ -19,7 +19,9 @@
 <script>
   export default {
     name: 'TableList',
-    props: ['list', 'labels', 'displayF']
+    props: ['list', 'labels', 'displayF'],
+    mounted() {
+    }
   }
 </script>
 

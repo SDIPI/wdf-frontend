@@ -47,7 +47,7 @@
       </div>
       <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="#accordion">
         <div class="card-body">
-          Soon
+          <TableList :list="ProfileStore.tfIdf" :labels="['Page', 'Keywords']" :displayF="(function(el) {return [el['url'], el['top3']];})"></TableList>
         </div>
       </div>
     </div>

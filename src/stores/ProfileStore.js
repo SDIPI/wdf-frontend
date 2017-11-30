@@ -22,6 +22,8 @@ const ProfileStore = {
     visitedDomains: [],
     watchedSites: [],
     watchedDomains: [],
+    tfIdf: [],
+    nbDocuments: null,
     connected: null,
     wdfId: -1
   },
@@ -109,6 +111,7 @@ const ProfileStore = {
         .then(response => response.json())
         .then((data) => {
           let urls = {};
+          let urlsList = [];
           // Compute TfIdf
           data.map((el) => {
             let url = el['url'];
@@ -119,13 +122,19 @@ const ProfileStore = {
               urls[url] = [el];
             }
           });
-          // Sort and truncate data
           for (let url in urls) {
+            // Sorting all words by weight and keeping the first three
             urls[url].sort((a, b) => {
               return (tfIdf(b['tf'], b['df'], nbDocs) - tfIdf(a['tf'], a['df'], nbDocs))
-            }).slice(0, 10);
+            }).slice(0, 3);
+            urlsList.push({url: url, words: urls[url], top3:urls[url].map((el) => el['word']).splice(0, 3).join(', ')});
           }
-          ProfileStore.data.tfIdf = urls;
+          // Sort and truncate data
+          /*
+          urlsList.sort((a, b) => {
+            return (tfIdf(b['tf'], b['df'], nbDocs) - tfIdf(a['tf'], a['df'], nbDocs))
+          }).slice(0, 10);*/
+          ProfileStore.data.tfIdf = urlsList;
         });
     },
   }
