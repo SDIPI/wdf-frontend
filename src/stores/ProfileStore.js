@@ -11,6 +11,10 @@ function parseUrl(url, part) {
   return parser[part];
 }
 
+function tfIdf(tf, df, documents) {
+  return tf * Math.log(documents / df);
+}
+
 const ProfileStore = {
   data: {
     apiBase: "http://df.sdipi.ch:5000",
@@ -36,7 +40,7 @@ const ProfileStore = {
         });
     },
     refreshVisitedSites() {
-      fetch(ProfileStore.data.apiBase + "/api/mostVisitedSites", {credentials: 'include'})
+      return fetch(ProfileStore.data.apiBase + "/api/mostVisitedSites", {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
           // Compute domains
@@ -65,7 +69,7 @@ const ProfileStore = {
         });
     },
     refreshWatchedSites() {
-      fetch(ProfileStore.data.apiBase + "/api/mostWatchedSites", {credentials: 'include'})
+      return fetch(ProfileStore.data.apiBase + "/api/mostWatchedSites", {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
           // Compute domains
@@ -92,7 +96,38 @@ const ProfileStore = {
           ProfileStore.data.watchedSites = sortedUrls;
           ProfileStore.data.watchedDomains = sortedDomains;
         });
-    }
+    },
+    refreshNbDocuments() {
+      return fetch(ProfileStore.data.apiBase + "/api/nbDocuments", {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          ProfileStore.data.nbDocuments = parseInt(data['count']);
+        });
+    },
+    refreshTfIdf(nbDocs) {
+      return fetch(ProfileStore.data.apiBase + "/api/tfIdfSites", {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          let urls = {};
+          // Compute TfIdf
+          data.map((el) => {
+            let url = el['url'];
+            delete el['url'];
+            if (url in urls) {
+              urls[url].push(el);
+            } else {
+              urls[url] = [el];
+            }
+          });
+          // Sort and truncate data
+          for (let url in urls) {
+            urls[url].sort((a, b) => {
+              return (tfIdf(b['tf'], b['df'], nbDocs) - tfIdf(a['tf'], a['df'], nbDocs))
+            }).slice(0, 10);
+          }
+          ProfileStore.data.tfIdf = urls;
+        });
+    },
   }
 };
 

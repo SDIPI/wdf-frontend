@@ -3,7 +3,7 @@
     <h1 class="display-4">Stats</h1>
 
     <p>
-      Soon
+      We have a total of {{ ProfileStore.nbDocuments }} different pages.
     </p>
 
   </div>

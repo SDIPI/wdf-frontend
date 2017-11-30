@@ -60,6 +60,9 @@
         if (ProfileStore.data.connected) {
           ProfileStore.methods.refreshVisitedSites();
           ProfileStore.methods.refreshWatchedSites();
+          ProfileStore.methods.refreshNbDocuments().then(() => {
+            ProfileStore.methods.refreshTfIdf();
+          })
         }
       });
     }
