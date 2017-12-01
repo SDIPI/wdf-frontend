@@ -1,5 +1,4 @@
 language: node
-script: bash ./deploy.sh
 install:
 - npm install
 after_success:
