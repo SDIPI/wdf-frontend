@@ -1,7 +1,7 @@
 {
-  "name": "frontend",
+  "name": "wdf-frontend",
   "version": "1.0.0",
-  "description": "A Vue.js project",
+  "description": "wdf-frontend is the user interface part of the Web Digital Footprints and Data Privacy project from SDIPI (https://sdipi.ch)",
   "author": "Kewin Dousse <me@protectator.ch>",
   "private": true,
   "scripts": {
