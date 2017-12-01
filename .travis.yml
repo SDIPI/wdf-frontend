@@ -1,8 +1,13 @@
 language: node
 script: bash ./deploy.sh
-env:
-  global:
-  - ENCRYPTION_LABEL: "51587372b214"
-  - COMMIT_AUTHOR_EMAIL: kewin.dousse@master.hes-so.ch
 install:
 - npm install
+after_success:
+- cp -R ./dist/* .
+- rm -rf dist
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  on:
+    branch: master
