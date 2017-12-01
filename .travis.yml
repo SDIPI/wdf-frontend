@@ -3,12 +3,11 @@ install:
 - npm install
 script:
 - npm run build
-after_success:
-- cp -R ./dist/* .
-- rm -rf dist
 deploy:
   provider: pages
   skip_cleanup: true
   github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  local_dir: dist
+  fqdn: wdf.sdipi.ch
   on:
     branch: master
