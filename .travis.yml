@@ -1,6 +1,8 @@
 language: node
 install:
 - npm install
+script:
+- npm run build
 after_success:
 - cp -R ./dist/* .
 - rm -rf dist
