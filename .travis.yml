@@ -4,3 +4,5 @@ env:
   global:
   - ENCRYPTION_LABEL: "51587372b214"
   - COMMIT_AUTHOR_EMAIL: kewin.dousse@master.hes-so.ch
+install:
+- npm install
