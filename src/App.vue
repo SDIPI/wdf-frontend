@@ -12,16 +12,16 @@
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item">
-              <router-link class="nav-link" to="/">General</router-link>
+              <router-link class="nav-link exact" to="/">General</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="trackers">Trackers</router-link>
+              <router-link class="nav-link" to="/trackers">Trackers</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="profile">Profile</router-link>
+              <router-link class="nav-link" to="/profile">Profile</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="stats">Stats</router-link>
+              <router-link class="nav-link" to="/stats">Stats</router-link>
             </li>
           </ul>
         </div>
@@ -80,7 +80,11 @@
     max-height: 44px;
   }
 
-  a.router-link-exact-active {
+  a.router-link-exact-active.exact {
+    color: #fff !important;
+  }
+
+  a.router-link-active:not(.exact) {
     color: #fff !important;
   }
 </style>
