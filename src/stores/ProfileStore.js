@@ -23,8 +23,12 @@ const ProfileStore = {
     watchedSites: [],
     watchedDomains: [],
     visitedSitesWithWords: [],
+    visitedDomainsWithWords: [],
+    watchedSitesWithWords: [],
+    watchedDomainsWithWords: [],
     tfIdf: [],
     tfIdfByUrl: {},
+    tfIdfByDomain: {},
     nbDocuments: null,
     connected: null,
     wdfId: -1
@@ -114,14 +118,22 @@ const ProfileStore = {
         .then((data) => {
           let urls = {};
           let urlsList = [];
+          let domains = {};
+          let domainsList = [];
           // Compute TfIdf
           data.map((el) => {
             let url = el['url'];
+            let domain = parseUrl(url, "hostname");
             delete el['url'];
             if (url in urls) {
               urls[url].push(el);
             } else {
               urls[url] = [el];
+            }
+            if (domain in domains) {
+              domains[domain].push(el);
+            } else {
+              domains[domain] = [el];
             }
           });
           for (let url in urls) {
@@ -131,28 +143,63 @@ const ProfileStore = {
             });
             urlsList.push({url: url, words: urls[url], top3:urls[url].map((el) => el['word']).splice(0, 3).join(', ')});
           }
+
+          for (let domain in domains) {
+            // Sorting all words by weight and keeping the first three
+            domains[domain].sort((a, b) => {
+              return (tfIdf(b['tf'], b['df'], ProfileStore.data.nbDocuments) - tfIdf(a['tf'], a['df'], ProfileStore.data.nbDocuments))
+            });
+            domainsList.push({domain: domain, words: domains[domain], top3: domains[domain].map((el) => el['word']).splice(0, 3).join(', ')});
+          }
+
           // Sort and truncate data
           /*
           urlsList.sort((a, b) => {
             return (tfIdf(b['tf'], b['df'], nbDocs) - tfIdf(a['tf'], a['df'], nbDocs))
           }).slice(0, 10);*/
           ProfileStore.data.tfIdfByUrl = urls;
+          ProfileStore.data.tfIdfByDomain = domains;
           ProfileStore.data.tfIdf = urlsList;
           this.computeWords();
         });
     },
+    /* Add keywords to existing lists */
     computeWords() {
+      // visited sites
       var result = [];
       for (var i in ProfileStore.data.visitedSites) {
-        console.log(i);
         var page = ProfileStore.data.visitedSites[i];
-        var url = page.url;
-        console.log(page);
-        page.words = ProfileStore.data.tfIdfByUrl[url];
+        page.words = ProfileStore.data.tfIdfByUrl[page.url];
         result.push(page);
       }
-      console.log(result);
       ProfileStore.data.visitedSitesWithWords = result;
+
+      // visites domains
+      result = [];
+      for (var i in ProfileStore.data.visitedDomains) {
+        var page = ProfileStore.data.visitedDomains[i];
+        page.words = ProfileStore.data.tfIdfByDomain[page.domain];
+        result.push(page);
+      }
+      ProfileStore.data.visitedDomainsWithWords = result;
+
+      // watched sites
+      var result = [];
+      for (var i in ProfileStore.data.watchedSites) {
+        var page = ProfileStore.data.watchedSites[i];
+        page.words = ProfileStore.data.tfIdfByUrl[page.url];
+        result.push(page);
+      }
+      ProfileStore.data.watchedSitesWithWords = result;
+
+      // watched domains
+      result = [];
+      for (var i in ProfileStore.data.watchedDomains) {
+        var page = ProfileStore.data.watchedDomains[i];
+        page.words = ProfileStore.data.tfIdfByDomain[page.domain];
+        result.push(page);
+      }
+      ProfileStore.data.watchedDomainsWithWords = result;
     }
   }
 };
