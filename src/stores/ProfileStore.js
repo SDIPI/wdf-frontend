@@ -22,7 +22,9 @@ const ProfileStore = {
     visitedDomains: [],
     watchedSites: [],
     watchedDomains: [],
+    visitedSitesWithWords: [],
     tfIdf: [],
+    tfIdfByUrl: {},
     nbDocuments: null,
     connected: null,
     wdfId: -1
@@ -106,7 +108,7 @@ const ProfileStore = {
           ProfileStore.data.nbDocuments = parseInt(data['count']);
         });
     },
-    refreshTfIdf(nbDocs) {
+    refreshTfIdf() {
       return fetch(ProfileStore.data.apiBase + "/api/tfIdfSites", {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
@@ -125,8 +127,8 @@ const ProfileStore = {
           for (let url in urls) {
             // Sorting all words by weight and keeping the first three
             urls[url].sort((a, b) => {
-              return (tfIdf(b['tf'], b['df'], nbDocs) - tfIdf(a['tf'], a['df'], nbDocs))
-            }).slice(0, 3);
+              return (tfIdf(b['tf'], b['df'], ProfileStore.data.nbDocuments) - tfIdf(a['tf'], a['df'], ProfileStore.data.nbDocuments))
+            });
             urlsList.push({url: url, words: urls[url], top3:urls[url].map((el) => el['word']).splice(0, 3).join(', ')});
           }
           // Sort and truncate data
@@ -134,9 +136,24 @@ const ProfileStore = {
           urlsList.sort((a, b) => {
             return (tfIdf(b['tf'], b['df'], nbDocs) - tfIdf(a['tf'], a['df'], nbDocs))
           }).slice(0, 10);*/
+          ProfileStore.data.tfIdfByUrl = urls;
           ProfileStore.data.tfIdf = urlsList;
+          this.computeWords();
         });
     },
+    computeWords() {
+      var result = [];
+      for (var i in ProfileStore.data.visitedSites) {
+        console.log(i);
+        var page = ProfileStore.data.visitedSites[i];
+        var url = page.url;
+        console.log(page);
+        page.words = ProfileStore.data.tfIdfByUrl[url];
+        result.push(page);
+      }
+      console.log(result);
+      ProfileStore.data.visitedSitesWithWords = result;
+    }
   }
 };
 
