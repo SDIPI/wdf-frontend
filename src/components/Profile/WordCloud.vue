@@ -105,7 +105,7 @@
         .duration(1000)
         .style("opacity", 1);
       text.style("font-family", function(d) {
-        return d.font;
+        return "Arimo"//;d.font;
       })
         .style("fill", function(d) {
           return "red";//fill(d.text.toLowerCase());

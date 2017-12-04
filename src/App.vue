@@ -38,7 +38,7 @@
 
     <footer class="footer">
       <div class="container">
-        <p class="text-muted">wdf-server sources available on <a href="https://github.com/SDIPI/wdf-server">GitHub</a>
+        <p class="text-muted">wdf-frontend sources available on <a href="https://github.com/SDIPI/wdf-frontend">GitHub</a>
         </p>
       </div>
     </footer>
@@ -62,6 +62,7 @@
           let watchedSitesP = ProfileStore.methods.refreshWatchedSites();
           Promise.all([visitedSitesP, watchedSitesP]).then(() => {
             ProfileStore.methods.refreshNbDocuments().then(() => {
+              ProfileStore.methods.refreshHistory();
               ProfileStore.methods.refreshTfIdf();
             });
           });

@@ -26,6 +26,7 @@ const ProfileStore = {
     visitedDomainsWithWords: [],
     watchedSitesWithWords: [],
     watchedDomainsWithWords: [],
+    historySites: [],
     tfIdf: [],
     tfIdfByUrl: {},
     tfIdfByDomain: {},
@@ -200,7 +201,31 @@ const ProfileStore = {
         result.push(page);
       }
       ProfileStore.data.watchedDomainsWithWords = result;
-    }
+    },
+    refreshHistory() {
+      return fetch(ProfileStore.data.apiBase + "/api/historySites", {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          var result = {};
+          var resultList = [];
+          data = data.splice(0,5);
+          for (var entryI in data) {
+            var entry = data[entryI];
+            var newEl = [new Date(entry.day).getTime(), entry.sumAmount];
+            if (entry.url in result) {
+              result[entry.url].push(newEl);
+            } else {
+              result[entry.url] = [newEl];
+            }
+          }
+          for (var el in result) {
+            resultList.push({name: el, data:result[el]});
+          }
+          console.log(result);
+          console.log(resultList);
+          ProfileStore.data.historySites = resultList;
+        });
+    },
   }
 };
 

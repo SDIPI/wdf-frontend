@@ -16,7 +16,7 @@
         <router-link class="nav-link" to="/profile/mostwatched">Most Watched</router-link>
       </li>
       <li class="nav-item">
-        <router-link class="nav-link" to="/profile/history">Interests history</router-link>
+        <router-link class="nav-link" to="/profile/history">History</router-link>
       </li>
     </ul>
 
