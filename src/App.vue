@@ -64,6 +64,7 @@
             ProfileStore.methods.refreshNbDocuments().then(() => {
               ProfileStore.methods.refreshHistory();
               ProfileStore.methods.refreshTfIdf();
+              ProfileStore.methods.refreshInterests();
             });
           });
         }

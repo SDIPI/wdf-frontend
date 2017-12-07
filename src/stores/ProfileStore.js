@@ -26,6 +26,8 @@ const ProfileStore = {
     visitedDomainsWithWords: [],
     watchedSitesWithWords: [],
     watchedDomainsWithWords: [],
+    watchedKeyWords: [],
+    interests: [],
     historySites: [],
     tfIdf: [],
     tfIdfByUrl: {},
@@ -201,6 +203,23 @@ const ProfileStore = {
         result.push(page);
       }
       ProfileStore.data.watchedDomainsWithWords = result;
+
+      // best keywords
+      var data = ProfileStore.data.watchedSitesWithWords;
+      var tagsDict = {};
+      for (var i in data) {
+        var el = data[i];
+        for (var wordI in el.words) {
+          var word = el.words[wordI];
+          if (word.word in tagsDict) {
+            tagsDict[word.word] += tfIdf(word.tf, word.df, ProfileStore.data.nbDocuments) * el.time;
+          } else {
+            tagsDict[word.word] = tfIdf(word.tf, word.df, ProfileStore.data.nbDocuments) * el.time;
+          }
+        }
+      }
+
+      ProfileStore.data.watchedKeyWords = tagsDict;
     },
     refreshHistory() {
       return fetch(ProfileStore.data.apiBase + "/api/historySites", {credentials: 'include'})
@@ -224,6 +243,13 @@ const ProfileStore = {
           console.log(result);
           console.log(resultList);
           ProfileStore.data.historySites = resultList;
+        });
+    },
+    refreshInterests() {
+      return fetch(ProfileStore.data.apiBase + "/api/interests", {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          ProfileStore.data.interests = data;
         });
     },
   }

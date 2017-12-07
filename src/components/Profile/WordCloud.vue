@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h2 class="mb-0">Wordcloud</h2>
     <div id="vis"></div>
   </div>
 </template>
@@ -12,30 +13,10 @@
   }
 
   function drawCloud() {
-    var data = ProfileStore.data.watchedSitesWithWords;
     var tags = [];
-    var tagsDict = {};
-    console.log("DRAW CLOUD");
-    console.log(data);
-    for (var i in data) {
-      var el = data[i];
-      for (var wordI in el.words) {
-        var word = el.words[wordI];
-        if (word.word in tagsDict) {
-          tagsDict[word.word] += tfIdf(word.tf, word.df, ProfileStore.data.nbDocuments) * el.time;
-        } else {
-          tagsDict[word.word] = tfIdf(word.tf, word.df, ProfileStore.data.nbDocuments) * el.time;
-        }
-      }
+    for (var i in ProfileStore.data.watchedKeyWords) {
+      tags.push({"key": i, "value": ProfileStore.data.watchedKeyWords[i]});
     }
-
-    for (var i in tagsDict) {
-      tags.push({"key": i, "value": tagsDict[i]});
-    }
-
-    console.log(tagsDict);
-    //.map((e) => {return {key: e.url, value: e.words[0]}});
-    //var tags = [{"key": "Cat", "value": 260}, {"key": "fish", "value": 190}, {"key": "things", "value": 180}];
 
     var fill = d3.scale.category20b();
 
