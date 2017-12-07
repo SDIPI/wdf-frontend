@@ -7,7 +7,7 @@
         <router-link class="nav-link" to="/profile/wordcloud">Wordcloud</router-link>
       </li>
       <li class="nav-item">
-        <router-link class="nav-link disabled" to="/profile/graph">Interests graph</router-link>
+        <router-link class="nav-link" to="/profile/graph">Interests graph</router-link>
       </li>
       <li class="nav-item">
         <router-link class="nav-link" to="/profile/mostvisited">Most Visited</router-link>

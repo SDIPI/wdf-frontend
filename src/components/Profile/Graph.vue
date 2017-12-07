@@ -31,12 +31,12 @@
 
       for (let topicId in interests['topics']) {
         let topic = interests['topics'][topicId];
-        topics.push({id: "t" + topicId, label: topic[0][0]});
+        topics.push({id: "t" + topicId, label: topic[0][0], color: 'red', 'font':{color:'white'}});
       }
 
       for (let wordId in interests['keywords']) {
         let word = interests['keywords'][wordId];
-        keywords.push({id: "w" + wordId, label: word['word']});
+        keywords.push({id: "w" + wordId, label: word['word'], color: '#007bff', 'font':{color:'white'}});
         for (let link in word['topics']) {
           connections.push({from: "w" +  wordId, to: "t" + link[0]});
         }

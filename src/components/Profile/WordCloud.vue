@@ -18,6 +18,8 @@
       tags.push({"key": i, "value": ProfileStore.data.watchedKeyWords[i]});
     }
 
+    tags = tags.splice(0, 200);
+
     var fill = d3.scale.category20b();
 
     var w = 1100,
