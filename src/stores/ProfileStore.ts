@@ -1,10 +1,3 @@
-function groupBy(xs, key) {
-  return xs.reduce(function (rv, x) {
-    (rv[x[key]] = rv[x[key]] || []).push(x);
-    return rv;
-  }, {});
-}
-
 function parseUrl(url, part) {
   let parser = document.createElement('a');
   parser.href = url;
@@ -15,7 +8,40 @@ function tfIdf(tf, df, documents) {
   return tf * Math.log(documents / df);
 }
 
-const ProfileStore: any = {
+interface ProfileStoreData {
+  data: {
+    apiBase: "http://df.sdipi.ch:5000",
+    visitedSites: any[],
+    visitedDomains: any[],
+    watchedSites: any[],
+    watchedDomains: any[],
+    visitedSitesWithWords: any[],
+    visitedDomainsWithWords: any[],
+    watchedSitesWithWords: any[],
+    watchedDomainsWithWords: any[],
+    watchedKeyWords: {},
+    interests: any[],
+    historySites: any[],
+    tfIdf: any[],
+    tfIdfByUrl: {},
+    tfIdfByDomain: {},
+    nbDocuments?: number | null,
+    connected?: boolean | null,
+    wdfId: number
+  },
+  methods: {
+    connectionState: () => Promise<any>,
+    computeWords: () => void,
+    refreshVisitedSites: () => Promise<any>,
+    refreshWatchedSites: () => Promise<any>,
+    refreshNbDocuments: () => Promise<any>,
+    refreshTfIdf: () => Promise<any>,
+    refreshHistory: () => Promise<any>,
+    refreshInterests: () => Promise<any>,
+  }
+}
+
+const ProfileStore: ProfileStoreData = {
   data: {
     apiBase: "http://df.sdipi.ch:5000",
     visitedSites: [],
@@ -26,7 +52,7 @@ const ProfileStore: any = {
     visitedDomainsWithWords: [],
     watchedSitesWithWords: [],
     watchedDomainsWithWords: [],
-    watchedKeyWords: [],
+    watchedKeyWords: {},
     interests: [],
     historySites: [],
     tfIdf: [],
@@ -55,9 +81,9 @@ const ProfileStore: any = {
         .then(response => response.json())
         .then((data) => {
           // Compute domains
-          let domains: any = {};
-          let domainsList: any = [];
-          data.map((el: any) => {
+          let domains = {};
+          let domainsList: any[] = [];
+          data.map((el) => {
             let domain = parseUrl(el.url, "hostname");
             if (domain in domains) {
               domains[domain] += el['count'];
@@ -169,9 +195,9 @@ const ProfileStore: any = {
     /* Add keywords to existing lists */
     computeWords() {
       // visited sites
-      var result: any = [];
-      for (var i in ProfileStore.data.visitedSites) {
-        var page = ProfileStore.data.visitedSites[i];
+      let result: any = [];
+      for (let i in ProfileStore.data.visitedSites) {
+        let page = ProfileStore.data.visitedSites[i];
         page.words = ProfileStore.data.tfIdfByUrl[page.url];
         result.push(page);
       }
@@ -179,8 +205,8 @@ const ProfileStore: any = {
 
       // visites domains
       result = [];
-      for (var i in ProfileStore.data.visitedDomains) {
-        var page = ProfileStore.data.visitedDomains[i];
+      for (let i in ProfileStore.data.visitedDomains) {
+        let page = ProfileStore.data.visitedDomains[i];
         page.words = ProfileStore.data.tfIdfByDomain[page.domain];
         result.push(page);
       }
@@ -188,8 +214,8 @@ const ProfileStore: any = {
 
       // watched sites
       result = [];
-      for (var i in ProfileStore.data.watchedSites) {
-        var page = ProfileStore.data.watchedSites[i];
+      for (let i in ProfileStore.data.watchedSites) {
+        let page = ProfileStore.data.watchedSites[i];
         page.words = ProfileStore.data.tfIdfByUrl[page.url];
         result.push(page);
       }
@@ -197,20 +223,20 @@ const ProfileStore: any = {
 
       // watched domains
       result = [];
-      for (var i in ProfileStore.data.watchedDomains) {
-        var page = ProfileStore.data.watchedDomains[i];
+      for (let i in ProfileStore.data.watchedDomains) {
+        let page = ProfileStore.data.watchedDomains[i];
         page.words = ProfileStore.data.tfIdfByDomain[page.domain];
         result.push(page);
       }
       ProfileStore.data.watchedDomainsWithWords = result;
 
       // best keywords
-      var data = ProfileStore.data.watchedSitesWithWords;
-      var tagsDict = {};
-      for (var i in data) {
-        var el = data[i];
-        for (var wordI in el.words) {
-          var word = el.words[wordI];
+      let data = ProfileStore.data.watchedSitesWithWords;
+      let tagsDict = {};
+      for (let i in data) {
+        let el = data[i];
+        for (let wordI in el.words) {
+          let word = el.words[wordI];
           if (word.word in tagsDict) {
             tagsDict[word.word] += tfIdf(word.tf, word.df, ProfileStore.data.nbDocuments) * el.time;
           } else {
@@ -225,18 +251,18 @@ const ProfileStore: any = {
       return fetch(ProfileStore.data.apiBase + "/api/historySites", {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
-          var result = {};
-          var resultList: any = [];
-          for (var entryI in data) {
-            var entry = data[entryI];
-            var newEl = [new Date(entry.day).getTime(), entry.sumAmount];
+          let result = {};
+          let resultList: any = [];
+          for (let entryI in data) {
+            let entry = data[entryI];
+            let newEl = [new Date(entry.day).getTime(), entry.sumAmount];
             if (entry.url in result) {
               result[entry.url].push(newEl);
             } else {
               result[entry.url] = [newEl];
             }
           }
-          for (var el in result) {
+          for (let el in result) {
             resultList.push({name: el, data:result[el]});
           }
           resultList = resultList.splice(0,5);
