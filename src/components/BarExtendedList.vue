@@ -11,9 +11,9 @@
     <tbody>
     <tr v-for="(element, index) in list">
       <th scope="row">{{ index+1 }}</th>
-      <td>{{ element[keyLabel] }}</td>
-      <td class="middle"><strong>{{ element[keyValue1] ? (valueF1 ? valueF1(element[keyValue1]) : element[keyValue1]) : '' }}</strong></td>
-      <td class="middle"><strong>{{ element[keyValue2] ? (valueF2 ? valueF2(element[keyValue2]) : element[keyValue2]) : '' }}</strong></td>
+      <td class="first"><a :href="element[keyLabel]" target="_blank">{{ element[keyLabel] }}</a></td>
+      <td class="middle"><var>{{ element[keyValue1] ? (valueF1 ? valueF1(element[keyValue1]) : element[keyValue1]) : '' }}</var></td>
+      <td class="middle toRight"><strong>{{ element[keyValue2] ? (valueF2 ? valueF2(element[keyValue2]) : element[keyValue2]) : '' }}</strong></td>
       <td class="middle bar">
         <div class="progress">
           <div class="progress-bar" role="progressbar" :style="'width: ' + (element[keyValue2]*100/maxValue) + '%;'" :aria-valuenow="element[keyValue2]*100/maxValue" aria-valuemin="0" :aria-valuemax="maxValue"></div>
@@ -42,12 +42,19 @@
   background-color: red !important;
 }
 
+td.first {
+  width: 30%;
+}
+
 td.middle {
   vertical-align: middle;
+}
+
+td.toRight {
   text-align: right;
 }
 
 .bar {
-  width: 100%;
+  width: 30%;
 }
 </style>

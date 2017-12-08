@@ -227,7 +227,6 @@ const ProfileStore = {
         .then((data) => {
           var result = {};
           var resultList = [];
-          data = data.splice(0,5);
           for (var entryI in data) {
             var entry = data[entryI];
             var newEl = [new Date(entry.day).getTime(), entry.sumAmount];
@@ -240,6 +239,7 @@ const ProfileStore = {
           for (var el in result) {
             resultList.push({name: el, data:result[el]});
           }
+          resultList = resultList.splice(0,5);
           console.log(result);
           console.log(resultList);
           ProfileStore.data.historySites = resultList;

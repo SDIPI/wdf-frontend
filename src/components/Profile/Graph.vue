@@ -38,7 +38,7 @@
         let word = interests['keywords'][wordId];
         keywords.push({id: "w" + wordId, label: word['word'], color: '#007bff', 'font':{color:'white'}});
         for (let link in word['topics']) {
-          connections.push({from: "w" +  wordId, to: "t" + link[0]});
+          connections.push({from: "w" +  wordId, to: "t" + word['topics'][link][0]});
         }
       }
 
@@ -50,14 +50,6 @@
 
       // create an array with edges
       var edges = new vis.DataSet(connections);
-      /*
-      var edges = new vis.DataSet([
-        {from: 1, to: 3},
-        {from: 1, to: 2},
-        {from: 2, to: 4},
-        {from: 2, to: 5},
-        {from: 3, to: 3}
-      ]);*/
 
       // create a network
       var container = document.getElementById('mynetwork');
@@ -74,7 +66,7 @@
 <style>
   #mynetwork {
     width: 100%;
-    height: 550px;
+    height: 600px;
     border: 1px solid lightgray;
   }
 </style>

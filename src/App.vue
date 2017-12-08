@@ -89,4 +89,8 @@
   a.router-link-active:not(.exact) {
     color: #fff !important;
   }
+
+  var {
+    padding-right: 2px;
+  }
 </style>

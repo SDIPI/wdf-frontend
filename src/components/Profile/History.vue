@@ -83,6 +83,11 @@
             marker: {
               enabled: true
             }
+          },
+          series: {
+            dataLabels: {
+              enabled: false
+            }
           }
         },
 

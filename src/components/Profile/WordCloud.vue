@@ -23,7 +23,7 @@
     var fill = d3.scale.category20b();
 
     var w = 1100,
-      h = 500;
+      h = 600;
 
     var max,
       fontSize;
@@ -53,7 +53,7 @@
 
     function draw(data, bounds) {
       var w = 1100,
-        h = 500;
+        h = 600;
 
       svg.attr("width", w).attr("height", h);
 
