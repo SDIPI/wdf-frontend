@@ -15,7 +15,7 @@ function tfIdf(tf, df, documents) {
   return tf * Math.log(documents / df);
 }
 
-const ProfileStore = {
+const ProfileStore: any = {
   data: {
     apiBase: "http://df.sdipi.ch:5000",
     visitedSites: [],
@@ -55,9 +55,9 @@ const ProfileStore = {
         .then(response => response.json())
         .then((data) => {
           // Compute domains
-          let domains = {};
-          let domainsList = [];
-          data.map((el) => {
+          let domains: any = {};
+          let domainsList: any = [];
+          data.map((el: any) => {
             let domain = parseUrl(el.url, "hostname");
             if (domain in domains) {
               domains[domain] += el['count'];
@@ -84,8 +84,8 @@ const ProfileStore = {
         .then(response => response.json())
         .then((data) => {
           // Compute domains
-          let domains = {};
-          let domainsList = [];
+          let domains: any = {};
+          let domainsList: any = [];
           data.map((el) => {
             let domain = parseUrl(el.url, "hostname");
             if (domain in domains) {
@@ -120,9 +120,9 @@ const ProfileStore = {
         .then(response => response.json())
         .then((data) => {
           let urls = {};
-          let urlsList = [];
+          let urlsList: any = [];
           let domains = {};
-          let domainsList = [];
+          let domainsList: any = [];
           // Compute TfIdf
           data.map((el) => {
             let url = el['url'];
@@ -169,7 +169,7 @@ const ProfileStore = {
     /* Add keywords to existing lists */
     computeWords() {
       // visited sites
-      var result = [];
+      var result: any = [];
       for (var i in ProfileStore.data.visitedSites) {
         var page = ProfileStore.data.visitedSites[i];
         page.words = ProfileStore.data.tfIdfByUrl[page.url];
@@ -187,7 +187,7 @@ const ProfileStore = {
       ProfileStore.data.visitedDomainsWithWords = result;
 
       // watched sites
-      var result = [];
+      result = [];
       for (var i in ProfileStore.data.watchedSites) {
         var page = ProfileStore.data.watchedSites[i];
         page.words = ProfileStore.data.tfIdfByUrl[page.url];
@@ -226,7 +226,7 @@ const ProfileStore = {
         .then(response => response.json())
         .then((data) => {
           var result = {};
-          var resultList = [];
+          var resultList: any = [];
           for (var entryI in data) {
             var entry = data[entryI];
             var newEl = [new Date(entry.day).getTime(), entry.sumAmount];
