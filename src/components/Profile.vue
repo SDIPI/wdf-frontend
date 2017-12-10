@@ -7,13 +7,13 @@
           Filter by date
         </a>
         <div id="exampleAccordion1" class="collapse" role="tabpanel">
-          <form class="form-inline filter">
+          <form class="form-inline filter" v-on:submit.prevent>
             <div class="form-group">
               <label for="startDate">From</label>
-              <input type="text" class="form-control mx-sm-3" placeholder="First name" id="startDate">
+              <input type="date" v-model="ProfileStore.filterForm.startDate" :min="ProfileStore.oldest" :max="Utils.today()" class="form-control mx-sm-3" placeholder="Start date" id="startDate">
               <label for="endDate">To</label>
-              <input type="text" class="form-control mx-sm-3" placeholder="Last name" id="endDate">
-              <button type="submit" class="btn btn-primary">Apply</button>
+              <input type="date" v-model="ProfileStore.filterForm.endDate" :min="ProfileStore.oldest" :max="Utils.today()" class="form-control mx-sm-3" placeholder="End date" id="endDate">
+              <button type="submit" class="btn btn-primary" v-on:click="refreshProfileStoreWithDates(true)">Apply</button>
             </div>
           </form>
         </div>
@@ -43,29 +43,7 @@
   </div>
 </template>
 
-<script>
-  import ProfileStore from "../stores/ProfileStore";
-  import BarList from "./BarList.vue";
-  import TableList from "./TableList.vue";
-  import MostVisited from "./Profile/MostVisited.vue";
-  import MostWatched from "./Profile/MostWatched.vue";
-
-  export default {
-    name: 'Profile',
-    components: {
-      TableList,
-      BarList,
-      MostVisited,
-      MostWatched
-    },
-    data() {
-      return {
-        ProfileStore: ProfileStore.data
-      };
-    },
-    methods: {}
-  }
-</script>
+<script lang="ts" src="./Profile.vue.ts"></script>
 
 <style>
   .blue a.router-link-active {

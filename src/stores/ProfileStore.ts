@@ -8,6 +8,20 @@ function tfIdf(tf, df, documents) {
   return tf * Math.log(documents / df);
 }
 
+function day(dateString) {
+  let date = new Date(dateString);
+  let dd: string|number = date.getDate();
+  let mm: string|number = date.getMonth()+1; //January is 0!
+  let yyyy = date.getFullYear();
+  if(dd<10){
+    dd='0'+dd
+  }
+  if(mm<10){
+    mm='0'+mm
+  }
+  return yyyy+'-'+mm+'-'+dd;
+}
+
 interface ProfileStoreData {
   data: {
     apiBase: "http://df.sdipi.ch:5000",
@@ -26,18 +40,26 @@ interface ProfileStoreData {
     tfIdfByUrl: {},
     tfIdfByDomain: {},
     nbDocuments?: number | null,
+    oldest?: string | null,
     connected?: boolean | null,
-    wdfId: number
+    wdfId: number,
+    filterForm: {
+      startDate?: string | null,
+      endDate?: string | null
+    },
+    loading: boolean
   },
   methods: {
     connectionState: () => Promise<any>,
     computeWords: () => void,
-    refreshVisitedSites: () => Promise<any>,
-    refreshWatchedSites: () => Promise<any>,
+    refreshVisitedSites: (boolean) => Promise<any>,
+    refreshWatchedSites: (boolean) => Promise<any>,
     refreshNbDocuments: () => Promise<any>,
     refreshTfIdf: () => Promise<any>,
     refreshHistory: () => Promise<any>,
     refreshInterests: () => Promise<any>,
+    refreshOldest: () => Promise<any>,
+    refreshEverything: (boolean) => Promise<any>
   }
 }
 
@@ -59,8 +81,14 @@ const ProfileStore: ProfileStoreData = {
     tfIdfByUrl: {},
     tfIdfByDomain: {},
     nbDocuments: null,
+    oldest: null,
     connected: null,
-    wdfId: -1
+    wdfId: -1,
+    filterForm: {
+      startDate: null,
+      endDate: null
+    },
+    loading: true
   },
   methods: {
     connectionState() {
@@ -76,8 +104,12 @@ const ProfileStore: ProfileStoreData = {
           }
         });
     },
-    refreshVisitedSites() {
-      return fetch(ProfileStore.data.apiBase + "/api/mostVisitedSites", {credentials: 'include'})
+    refreshVisitedSites(dates: boolean) {
+      let apiUrl = ProfileStore.data.apiBase + "/api/mostVisitedSites";
+      if (dates) {
+        apiUrl += "?from=" + ProfileStore.data.filterForm.startDate + "&to=" + ProfileStore.data.filterForm.endDate
+      }
+      return fetch(apiUrl, {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
           // Compute domains
@@ -105,8 +137,12 @@ const ProfileStore: ProfileStoreData = {
           ProfileStore.data.visitedDomains = sortedDomains;
         });
     },
-    refreshWatchedSites() {
-      return fetch(ProfileStore.data.apiBase + "/api/mostWatchedSites", {credentials: 'include'})
+    refreshWatchedSites(dates: boolean) {
+      let apiUrl = ProfileStore.data.apiBase + "/api/mostWatchedSites";
+      if (dates) {
+        apiUrl += "?from=" + ProfileStore.data.filterForm.startDate + "&to=" + ProfileStore.data.filterForm.endDate
+      }
+      return fetch(apiUrl, {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
           // Compute domains
@@ -266,8 +302,6 @@ const ProfileStore: ProfileStoreData = {
             resultList.push({name: el, data:result[el]});
           }
           resultList = resultList.splice(0,5);
-          console.log(result);
-          console.log(resultList);
           ProfileStore.data.historySites = resultList;
         });
     },
@@ -278,6 +312,30 @@ const ProfileStore: ProfileStoreData = {
           ProfileStore.data.interests = data;
         });
     },
+    refreshOldest() {
+      return fetch(ProfileStore.data.apiBase + "/api/oldestEntry", {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          ProfileStore.data.oldest = day(data['date']);
+        });
+    },
+    refreshEverything(dates: boolean) {
+      ProfileStore.data.loading = true;
+      return ProfileStore.methods.connectionState().then(() => {
+        if (ProfileStore.data.connected) {
+          let visitedSitesP = ProfileStore.methods.refreshVisitedSites(dates);
+          let watchedSitesP = ProfileStore.methods.refreshWatchedSites(dates);
+          Promise.all([visitedSitesP, watchedSitesP]).then(() => {
+            ProfileStore.methods.refreshNbDocuments().then(() => {
+              ProfileStore.methods.refreshHistory();
+              ProfileStore.methods.refreshTfIdf();
+              ProfileStore.methods.refreshInterests();
+              ProfileStore.data.loading = false;
+            });
+          });
+        }
+      });
+    }
   }
 };
 
