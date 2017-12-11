@@ -1,9 +1,9 @@
 <template>
   <div>
     <h2 class="mb-0">Most Visited Pages</h2>
-    <BarExtendedList :list="ProfileStore.visitedSitesWithWords" :labels="['Page', 'Keywords', 'Views']" :keyLabel="'url'" :keyValue1="'words'" :keyValue2="'count'" :valueF1="(function(e) {return e.slice(0, 3).map((e) => {return e.word}).join(' ')})"></BarExtendedList>
+    <BarExtendedList :list="ProfileStore.visitedSites" :labels="['Page', 'Keywords', 'Views']" :keyLabel="'url'" :keyValue1="'words'" :keyValue2="'count'" :valueF1="(function(e) {return e.slice(0, 3).map((e) => {return e.word}).join(' ')})"></BarExtendedList>
     <h2 class="mb-0">Most Visited Domains</h2>
-    <BarExtendedList :list="ProfileStore.visitedDomainsWithWords" :labels="['Domain', 'Keywords', 'Views']" :keyLabel="'domain'" :keyValue1="'words'" :keyValue2="'count'" :valueF1="(function(e) {return e.slice(0, 3).map((e) => {return e.word}).join(' ')})"></BarExtendedList>
+    <BarExtendedList :list="ProfileStore.visitedDomains" :labels="['Domain', 'Keywords', 'Views']" :keyLabel="'domain'" :keyValue1="'words'" :keyValue2="'count'" :valueF1="(function(e) {return e.slice(0, 3).map((e) => {return e.word}).join(' ')})"></BarExtendedList>
     <!--<BarList :list="ProfileStore.visitedDomains" :labels="['Page', 'Views']" :keyLabel="'domain'" :keyValue="'count'"></BarList>
     <h2 class="mb-0">Themes</h2>
     <TableList :list="ProfileStore.tfIdf" :labels="['Page', 'Keywords']" :displayF="(function(el) {return [el['url'], el['top3']];})"></TableList>-->
