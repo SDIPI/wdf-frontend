@@ -56,7 +56,7 @@ interface ProfileStoreData {
     refreshWatchedSites: (boolean) => Promise<any>,
     refreshNbDocuments: () => Promise<any>,
     refreshTfIdf: () => Promise<any>,
-    refreshHistory: () => Promise<any>,
+    refreshHistory: (boolean) => Promise<any>,
     refreshInterests: () => Promise<any>,
     refreshOldest: () => Promise<any>,
     refreshEverything: (boolean) => Promise<any>
@@ -283,8 +283,12 @@ const ProfileStore: ProfileStoreData = {
 
       ProfileStore.data.watchedKeyWords = tagsDict;
     },
-    refreshHistory() {
-      return fetch(ProfileStore.data.apiBase + "/api/historySites", {credentials: 'include'})
+    refreshHistory(dates: boolean) {
+      let apiUrl = ProfileStore.data.apiBase + "/api/historySites";
+      if (dates) {
+        apiUrl += "?from=" + ProfileStore.data.filterForm.startDate + "&to=" + ProfileStore.data.filterForm.endDate
+      }
+      return fetch(apiUrl, {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
           let result = {};
@@ -327,10 +331,12 @@ const ProfileStore: ProfileStoreData = {
           let watchedSitesP = ProfileStore.methods.refreshWatchedSites(dates);
           Promise.all([visitedSitesP, watchedSitesP]).then(() => {
             ProfileStore.methods.refreshNbDocuments().then(() => {
-              ProfileStore.methods.refreshHistory();
-              ProfileStore.methods.refreshTfIdf();
-              ProfileStore.methods.refreshInterests();
-              ProfileStore.data.loading = false;
+              let historyP = ProfileStore.methods.refreshHistory(dates);
+              let tfIdfP = ProfileStore.methods.refreshTfIdf();
+              let interestsP = ProfileStore.methods.refreshInterests();
+              Promise.all([historyP, tfIdfP, interestsP]).then(() => {
+                ProfileStore.data.loading = false;
+              })
             });
           });
         }
