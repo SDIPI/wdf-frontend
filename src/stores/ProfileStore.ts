@@ -4,10 +4,6 @@ function parseUrl(url, part) {
   return parser[part];
 }
 
-function tfIdf(tf, df, documents) {
-  return tf * Math.log(documents / df);
-}
-
 function day(dateString) {
   let date = new Date(dateString);
   let dd: string|number = date.getDate();
@@ -77,6 +73,7 @@ interface ProfileStoreData {
     tfIdf: any[],
     tfIdfByUrl: {},
     tfIdfByDomain: {},
+    bestKeyWords: {},
     nbDocuments?: number | null,
     oldest?: string | null,
     connected?: boolean | null,
@@ -113,6 +110,7 @@ const ProfileStore: ProfileStoreData = {
     tfIdf: [],
     tfIdfByUrl: {},
     tfIdfByDomain: {},
+    bestKeyWords: {},
     nbDocuments: null,
     oldest: null,
     connected: null,
@@ -167,20 +165,7 @@ const ProfileStore: ProfileStoreData = {
         .then(response => response.json())
         .then((data) => {
           // Compute domains
-          let domainsList = groupByDomain(data, 'time');/*
-          let domains: any = {};
-          let domainsList: any = [];
-          data.map((el) => {
-            let domain = parseUrl(el.url, "hostname");
-            if (domain in domains) {
-              domains[domain] += el.time;
-            } else {
-              domains[domain] = el.time;
-            }
-          });
-          for (let domain in domains) {
-            domainsList.push({domain: domain, time: domains[domain]});
-          }*/
+          let domainsList = groupByDomain(data, 'time');
           // Sort and truncate data
           let sortedUrls = data.sort((a, b) => {
             return (b['time'] - a['time'])
@@ -204,10 +189,14 @@ const ProfileStore: ProfileStoreData = {
       // best keywords
       let data = ProfileStore.data.watchedSites;
       let tagsDict = {};
+      let kwByUrl = {};
       for (let i in data) {
         let el = data[i];
+        let url = el['url'];
+        kwByUrl[url] = {};
         for (let wordI in el.words) {
           let word = el.words[wordI];
+          kwByUrl[url][word.word] = word.tfidf;
           if (word.word in tagsDict) {
             tagsDict[word.word] += word.tfidf * el.time;
           } else {
@@ -217,6 +206,7 @@ const ProfileStore: ProfileStoreData = {
       }
 
       ProfileStore.data.watchedKeyWords = tagsDict;
+      ProfileStore.data.bestKeyWords = kwByUrl;
     },
     refreshHistory(dates: boolean) {
       let apiUrl = ProfileStore.data.apiBase + "/api/historySites";
@@ -226,21 +216,54 @@ const ProfileStore: ProfileStoreData = {
       return fetch(apiUrl, {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
-          let result = {};
+          let resultByDay = {};
+          let resultByWord = {};
+          let sumByWord = {};
           let resultList: any = [];
           for (let entryI in data) {
             let entry = data[entryI];
-            let newEl = [new Date(entry.day).getTime(), entry.sumAmount];
-            if (entry.url in result) {
-              result[entry.url].push(newEl);
-            } else {
-              result[entry.url] = [newEl];
+            let day = new Date(entry['day']).getTime();
+            if (!(day in resultByDay)) {
+              resultByDay[day] = {};
+            }
+            for (let word in ProfileStore.data.bestKeyWords[entry['url']]) {
+              if (ProfileStore.data.bestKeyWords[entry['url']].hasOwnProperty(word)) {
+                if (!(word in resultByWord)) {
+                  resultByWord[word] = [];
+                }
+
+                if (!(word in resultByDay[day])) {
+                  resultByDay[day][word] = 0;
+                }
+
+                let toAdd = entry['sumAmount'] * ProfileStore.data.bestKeyWords[entry['url']][word];
+                resultByDay[day][word] += toAdd;
+                if (resultByWord[word].length > 0 && resultByWord[word][resultByWord[word].length - 1][0] == day) {
+                  resultByWord[word][resultByWord[word].length - 1][1] += toAdd;
+                } else {
+                  resultByWord[word].push([day, toAdd]);
+                }
+              }
             }
           }
-          for (let el in result) {
-            resultList.push({name: el, data:result[el]});
+          for (let word in resultByWord) {
+            sumByWord[word] = 0;
+            for (let dayR in resultByWord[word]) {
+              sumByWord[word] += resultByWord[word][dayR][1];
+            }
           }
-          resultList = resultList.splice(0,5);
+          let sumByWordList: {word: string, sum: number}[] = [];
+          for (let word in sumByWord) {
+            sumByWordList.push({'word': word, 'sum': sumByWord[word]});
+          }
+          sumByWordList.sort((a, b) => {
+            return (b.sum - a.sum)
+          });
+          sumByWordList = sumByWordList.splice(0,10);
+          for (let elI in sumByWordList) {
+            let el = sumByWordList[elI];
+            resultList.push({name: el.word, data:resultByWord[el.word]});
+          }
           ProfileStore.data.historySites = resultList;
         });
     },
@@ -266,13 +289,11 @@ const ProfileStore: ProfileStoreData = {
           let watchedSitesP = ProfileStore.methods.refreshWatchedSites(dates);
           Promise.all([visitedSitesP, watchedSitesP]).then(() => {
             ProfileStore.methods.computeWords();
-            ProfileStore.methods.refreshNbDocuments().then(() => {
-              let historyP = ProfileStore.methods.refreshHistory(dates);
-              let interestsP = ProfileStore.methods.refreshInterests();
-              Promise.all([historyP, interestsP]).then(() => {
-                ProfileStore.data.loading = false;
-              })
-            });
+            let historyP = ProfileStore.methods.refreshHistory(dates);
+            let interestsP = ProfileStore.methods.refreshInterests();
+            Promise.all([historyP, interestsP]).then(() => {
+              ProfileStore.data.loading = false;
+            })
           });
         }
       });
