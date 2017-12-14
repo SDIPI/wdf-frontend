@@ -70,10 +70,12 @@ interface ProfileStoreData {
     watchedKeyWords: {},
     interests: any[],
     historySites: any[],
+    historyWords: any[],
     tfIdf: any[],
     tfIdfByUrl: {},
     tfIdfByDomain: {},
     bestKeyWords: {},
+    interestsList: any[],
     nbDocuments?: number | null,
     oldest?: string | null,
     connected?: boolean | null,
@@ -82,6 +84,9 @@ interface ProfileStoreData {
       startDate?: string | null,
       endDate?: string | null
     },
+    settingsForm: {
+      interests?: any
+    }
     loading: boolean
   },
   methods: {
@@ -93,7 +98,9 @@ interface ProfileStoreData {
     refreshHistory: (boolean) => Promise<any>,
     refreshInterests: () => Promise<any>,
     refreshOldest: () => Promise<any>,
-    refreshEverything: (boolean) => Promise<any>
+    refreshInterestsList: () => Promise<any>,
+    refreshEverything: (boolean) => Promise<any>,
+    sendInterests: (any) => Promise<any>
   }
 }
 
@@ -107,10 +114,12 @@ const ProfileStore: ProfileStoreData = {
     watchedKeyWords: {},
     interests: [],
     historySites: [],
+    historyWords: [],
     tfIdf: [],
     tfIdfByUrl: {},
     tfIdfByDomain: {},
     bestKeyWords: {},
+    interestsList: [],
     nbDocuments: null,
     oldest: null,
     connected: null,
@@ -118,6 +127,9 @@ const ProfileStore: ProfileStoreData = {
     filterForm: {
       startDate: null,
       endDate: null
+    },
+    settingsForm: {
+      interests: null
     },
     loading: true
   },
@@ -216,6 +228,7 @@ const ProfileStore: ProfileStoreData = {
       return fetch(apiUrl, {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
+          /* --- History by keyword --- */
           let resultByDay = {};
           let resultByWord = {};
           let sumByWord = {};
@@ -264,7 +277,27 @@ const ProfileStore: ProfileStoreData = {
             let el = sumByWordList[elI];
             resultList.push({name: el.word, data:resultByWord[el.word]});
           }
-          ProfileStore.data.historySites = resultList;
+          ProfileStore.data.historyWords = resultList;
+          /* --- History by website --- */
+          let result = {};
+          let resultList2: any[] = [];
+          // data = data.splice(0,5);
+          for (let entryI in data) {
+            let entry = data[entryI];
+            let newEl = [new Date(entry.day).getTime(), entry.sumAmount];
+            if (entry.url in result) {
+              result[entry.url].push(newEl);
+            } else {
+              result[entry.url] = [newEl];
+            }
+          }
+          for (let el in result) {
+            resultList2.push({name: el, data:result[el]});
+          }
+          console.log(result);
+          console.log(resultList2);
+          resultList2 = resultList2.splice(0,5);
+          ProfileStore.data.historySites = resultList2;
         });
     },
     refreshInterests() {
@@ -281,12 +314,27 @@ const ProfileStore: ProfileStoreData = {
           ProfileStore.data.oldest = day(data['date']);
         });
     },
+    refreshInterestsList() {
+      return fetch(ProfileStore.data.apiBase + "/api/interestsList", {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          let result: any[] = [];
+          data.map((item) => {
+            let hierarchy = item['name'].split(' / ');
+            item['label'] = hierarchy[hierarchy.length - 1];
+            result.push(item);
+          });
+          console.log("Heh");
+          ProfileStore.data.interestsList = result;
+        });
+    },
     refreshEverything(dates: boolean) {
       ProfileStore.data.loading = true;
       return ProfileStore.methods.connectionState().then(() => {
         if (ProfileStore.data.connected) {
           let visitedSitesP = ProfileStore.methods.refreshVisitedSites(dates);
           let watchedSitesP = ProfileStore.methods.refreshWatchedSites(dates);
+          let iListP = ProfileStore.methods.refreshInterestsList();
           Promise.all([visitedSitesP, watchedSitesP]).then(() => {
             ProfileStore.methods.computeWords();
             let historyP = ProfileStore.methods.refreshHistory(dates);
@@ -297,7 +345,15 @@ const ProfileStore: ProfileStoreData = {
           });
         }
       });
-    }
+    },
+    sendInterests(interests: any[]) {
+      let queryString = "?data=" + interests;
+      return fetch(ProfileStore.data.apiBase + "/api/setInterests" + queryString, {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          console.log(data);
+        });
+    },
   }
 };
 

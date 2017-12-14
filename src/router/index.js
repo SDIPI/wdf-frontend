@@ -9,6 +9,7 @@ import History from '@/components/Profile/History'
 import General from '@/components/General'
 import Trackers from '@/components/Trackers'
 import Stats from '@/components/Stats'
+import Settings from '@/components/Settings'
 
 Vue.use(Router);
 
@@ -60,6 +61,11 @@ export default new Router({
       path: '/stats',
       name: 'Stats',
       component: Stats
+    },
+    {
+      path: '/settings',
+      name: 'Settings',
+      component: Settings
     },
   ]
 })

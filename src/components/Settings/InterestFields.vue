@@ -1,0 +1,69 @@
+<template>
+  <div class="form-group">
+    <label for="interests">Interest fields</label>
+    <input type="text" class="form-control" id="interests" placeholder="Enter interest fields">
+  </div>
+</template>
+
+<script>
+  import ProfileStore from "../../stores/ProfileStore";
+
+  let eventHandler = function(name) {
+    return function() {
+      console.log(arguments[0]);
+      ProfileStore.data.settingsForm.interests = arguments[0].split(',');
+    };
+  };
+
+  export default {
+    name: 'InterestFields',
+    components: {
+    },
+    data() {
+      return {
+        ProfileStore: ProfileStore.data
+      };
+    },
+    methods: {},
+    mounted() {
+      console.log(ProfileStore.data.interestsList);
+      $('#interests').selectize({
+        persist: false,
+        createOnBlur: false,
+        create: false,
+        maxItems: 10,
+        valueField: 'id',
+        labelField: 'label',
+        searchField: ['id', 'name', 'label'],
+        options: ProfileStore.data.interestsList,
+        onChange: eventHandler('change'),
+        render: {
+          option: function(item, escape) {
+            let cat = item['name'].split(' / ');
+            let final;
+            if (cat.length > 1) {
+              final = cat.slice(0, cat.length - 1).join(' / ');
+            } else {
+              final = cat[0];
+            }
+            return '<div>' +
+              '<span class="label">' + escape(final) + ' / </span>' +
+              (item.label ? '<span class="caption">' + escape(item.label) + '</span>' : '') +
+              '</div>';
+          }
+        },
+      });
+    }
+  }
+</script>
+
+<style>
+  .selectize-control {
+    padding: 0 !important;
+    border: 0;
+  }
+
+  .label {
+    color: #bbbbbb;
+  }
+</style>

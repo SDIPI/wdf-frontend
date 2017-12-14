@@ -24,6 +24,11 @@
               <router-link class="nav-link" to="/stats">Stats</router-link>
             </li>
           </ul>
+          <ul class="navbar-nav justify-content-end">
+            <li class="nav-item">
+              <router-link class="nav-link" to="/settings">Settings</router-link>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
@@ -33,6 +38,8 @@
       <div v-if="ProfileStore.connected === null">Connecting...</div>
       <div v-if="ProfileStore.connected == false">You're not connected.</div>
     </div>
+
+    <div id="alert_placeholder"></div>
 
     <hr>
 
@@ -66,5 +73,17 @@
 
   var {
     padding-right: 2px;
+  }
+
+  #alert_placeholder {
+    bottom: 20px;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    text-align: center;
+    background-color: #ffffff;
+    line-height: 2em;
   }
 </style>

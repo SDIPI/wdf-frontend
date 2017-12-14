@@ -1,7 +1,9 @@
 <template>
   <div>
-    <h2 class="mb-0">History</h2>
-    <div id="highChartContainer"></div>
+    <h2 class="mb-0">History of words</h2>
+    <div id="highChartContainer1"></div>
+    <h2 class="mb-0">History of sites</h2>
+    <div id="highChartContainer2"></div>
   </div>
 </template>
 
@@ -40,9 +42,10 @@
     methods: {},
     mounted() {
 
-      var dataHistory = ProfileStore.data.historySites;
+      var dataHistoryWords = ProfileStore.data.historyWords;
+      var dataHistorySites = ProfileStore.data.historySites;
 
-      Highcharts.chart('highChartContainer', {
+      Highcharts.chart('highChartContainer1', {
 
         chart: {
           type: 'spline'
@@ -91,7 +94,59 @@
           }
         },
 
-        series: dataHistory
+        series: dataHistoryWords
+      });
+
+      Highcharts.chart('highChartContainer2', {
+
+        chart: {
+          type: 'spline'
+        },
+        title: {
+          text: ''
+        },
+
+        xAxis: {
+          type: 'datetime',
+          dateTimeLabelFormats: { // don't display the dummy year
+            month: '%e. %b',
+            year: '%b'
+          },
+          title: {
+            text: 'Date'
+          }
+        },
+        yAxis: {
+          title: {
+            text: 'Time'
+          },
+          min: 0
+        },
+        tooltip: {
+          headerFormat: '<b>{series.name}</b><br>',
+          pointFormatter: function() {
+            var timeStr = toTime(this.y);
+            var timeValue = new Date(this.x);
+            console.log(timeValue);
+            return `${timeValue.getDay()+3}.${timeValue.getUTCMonth()+1}.${timeValue.getFullYear()}: ${timeStr}`;
+          }/*
+          pointFormat: '{point.x:%e. %b}: {point.y:.2f}'*/
+        },
+
+        plotOptions: {
+          spline: {
+            marker: {
+              enabled: true
+            }
+          },
+          series: {
+            dataLabels: {
+              enabled: false
+            }
+          }
+        },
+
+        series: dataHistorySites
       });
     }
   }
