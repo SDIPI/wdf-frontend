@@ -27,7 +27,7 @@
     methods: {},
     mounted() {
       console.log(ProfileStore.data.interestsList);
-      $('#interests').selectize({
+      let sel = $('#interests').selectize({
         persist: false,
         createOnBlur: false,
         create: false,
@@ -53,6 +53,11 @@
           }
         },
       });
+      if (ProfileStore.data.settingsForm.interests) {
+        let control = sel[0].selectize;
+        let value = ProfileStore.data.settingsForm.interests;
+        control.setValue(value);
+      }
     }
   }
 </script>

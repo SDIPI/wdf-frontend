@@ -99,6 +99,7 @@ interface ProfileStoreData {
     refreshInterests: () => Promise<any>,
     refreshOldest: () => Promise<any>,
     refreshInterestsList: () => Promise<any>,
+    refreshUserInterests: () => Promise<any>,
     refreshEverything: (boolean) => Promise<any>,
     sendInterests: (any) => Promise<any>
   }
@@ -335,7 +336,8 @@ const ProfileStore: ProfileStoreData = {
           let visitedSitesP = ProfileStore.methods.refreshVisitedSites(dates);
           let watchedSitesP = ProfileStore.methods.refreshWatchedSites(dates);
           let iListP = ProfileStore.methods.refreshInterestsList();
-          Promise.all([visitedSitesP, watchedSitesP]).then(() => {
+          let userInterestsP = ProfileStore.methods.refreshUserInterests();
+          Promise.all([visitedSitesP, watchedSitesP, userInterestsP]).then(() => {
             ProfileStore.methods.computeWords();
             let historyP = ProfileStore.methods.refreshHistory(dates);
             let interestsP = ProfileStore.methods.refreshInterests();
@@ -345,6 +347,17 @@ const ProfileStore: ProfileStoreData = {
           });
         }
       });
+    },
+    refreshUserInterests() {
+      return fetch(ProfileStore.data.apiBase + "/api/getInterests", {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          let result: any = [];
+          data.map((el) => {
+            result.push(el['interest_id']);
+          });
+          ProfileStore.data.settingsForm.interests = result;
+        });
     },
     sendInterests(interests: any[]) {
       let queryString = "?data=" + interests;
