@@ -1,7 +1,18 @@
 <template>
   <div>
     <h2 class="mb-0">Interests graph</h2>
-    <div id="mynetwork"></div>
+    <div class="row">
+      <div class="col-9">
+        <div id="mynetwork"></div>
+      </div>
+      <!--<div class="col-3" v-if="ProfileStore.data.graph.selected">
+        <h3 class="mb-0">Word informations</h3>
+        Word <b>{{data.selectedWord}}</b>
+        <select>
+          <option v-for="el in ProfileStore.interestsList">{{el.label}}</option>
+        </select>
+      </div>-->
+    </div>
   </div>
 </template>
 
@@ -18,7 +29,8 @@
     },
     data() {
       return {
-        ProfileStore: ProfileStore.data
+        ProfileStore: ProfileStore.data,
+        selectedWord: false
       };
     },
     methods: {},
@@ -59,6 +71,15 @@
       };
       var options = {};
       var network = new vis.Network(container, data, options);
+
+      network.on("selectNode", function (params) {
+        console.log('selectNode Event:', params);
+        ProfileStore.data.graph.selected = params;
+      });
+
+    },
+    beforeDestroy() {
+      ProfileStore.data.graph.selected = false;
     }
   }
 </script>

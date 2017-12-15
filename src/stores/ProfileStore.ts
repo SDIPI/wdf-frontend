@@ -71,6 +71,7 @@ interface ProfileStoreData {
     interests: any[],
     historySites: any[],
     historyWords: any[],
+    historyTopics: any[],
     tfIdf: any[],
     tfIdfByUrl: {},
     tfIdfByDomain: {},
@@ -86,7 +87,11 @@ interface ProfileStoreData {
     },
     settingsForm: {
       interests?: any
-    }
+    },
+    graph: {
+      selected: false | number
+    },
+    urlsTopic: {},
     loading: boolean
   },
   methods: {
@@ -101,6 +106,7 @@ interface ProfileStoreData {
     refreshInterestsList: () => Promise<any>,
     refreshUserInterests: () => Promise<any>,
     refreshEverything: (boolean) => Promise<any>,
+    refreshUrlsTopic: () => Promise<any>,
     sendInterests: (any) => Promise<any>
   }
 }
@@ -116,6 +122,7 @@ const ProfileStore: ProfileStoreData = {
     interests: [],
     historySites: [],
     historyWords: [],
+    historyTopics: [],
     tfIdf: [],
     tfIdfByUrl: {},
     tfIdfByDomain: {},
@@ -132,6 +139,10 @@ const ProfileStore: ProfileStoreData = {
     settingsForm: {
       interests: null
     },
+    graph: {
+      selected: false
+    },
+    urlsTopic: {},
     loading: true
   },
   methods: {
@@ -299,6 +310,34 @@ const ProfileStore: ProfileStoreData = {
           console.log(resultList2);
           resultList2 = resultList2.splice(0,5);
           ProfileStore.data.historySites = resultList2;
+          /* --- History by topic --- */
+          let resultTopics = {};
+          let resultTopicsList: any[] = [];
+          // data = data.splice(0,5);
+          for (let entryI in data) {
+            let entry = data[entryI];
+            let newEl: [number, number] = [new Date(entry.day).getTime(), entry.sumAmount];
+            let topic = ProfileStore.data.urlsTopic[entry.url];
+            if (!(topic in resultTopics)) {
+              resultTopics[topic] = {};
+            }
+            if (!(newEl[0] in resultTopics[topic])) {
+              resultTopics[topic][newEl[0]] = 0;
+            }
+            resultTopics[topic][newEl[0]] += newEl[1];
+          }
+          delete resultTopics["undefined"]; // :thinking:
+          for (let el in resultTopics) {
+            let resultTopic = resultTopics[el];
+            let resultTopicList: {data: any[], name: string}[] = [];
+            let dataTopicList: any[] = [];
+            let dataTopic = Object.keys(resultTopic).map(key => {dataTopicList.push([parseInt(key), resultTopic[key]])});
+            // resultTopic.map(el => {resultTopicList.push({name: el.name, data: dataTopic})});
+            resultTopicsList.push({name: el, data:dataTopicList});
+          }
+          console.log(resultTopics);
+          console.log(resultTopicsList);
+          ProfileStore.data.historyTopics = resultTopicsList;
         });
     },
     refreshInterests() {
@@ -306,6 +345,15 @@ const ProfileStore: ProfileStoreData = {
         .then(response => response.json())
         .then((data) => {
           ProfileStore.data.interests = data;
+        });
+    },
+    refreshUrlsTopic() {
+      return fetch(ProfileStore.data.apiBase + "/api/getUrlsTopic", {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          let result = {};
+          data.map((el) => result[el.url] = el.topic);
+          ProfileStore.data.urlsTopic = result;
         });
     },
     refreshOldest() {
@@ -337,7 +385,8 @@ const ProfileStore: ProfileStoreData = {
           let watchedSitesP = ProfileStore.methods.refreshWatchedSites(dates);
           let iListP = ProfileStore.methods.refreshInterestsList();
           let userInterestsP = ProfileStore.methods.refreshUserInterests();
-          Promise.all([visitedSitesP, watchedSitesP, userInterestsP]).then(() => {
+          let urlsTopicP = ProfileStore.methods.refreshUrlsTopic();
+          Promise.all([visitedSitesP, watchedSitesP, userInterestsP, urlsTopicP]).then(() => {
             ProfileStore.methods.computeWords();
             let historyP = ProfileStore.methods.refreshHistory(dates);
             let interestsP = ProfileStore.methods.refreshInterests();
