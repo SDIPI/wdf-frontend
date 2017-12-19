@@ -3,11 +3,11 @@
     <h2 class="mb-0">Interests graph</h2>
     <div class="row">
       <div class="col-9">
-        <div id="mynetwork"></div>
+        <div ref="mynetwork" id="mynetwork"></div>
       </div>
-      <div class="col-3" v-if="selectedWord">
+      <div class="col-3" v-if="ProfileStore.graph.selected">
         <h3 class="mb-0">Word informations</h3>
-        Word <b>{{ProfileStore.data.graph.selected}}</b>
+        Word <b>{{ProfileStore.graph.selected}}</b>
         <select>
           <option v-for="el in ProfileStore.interestsList">{{el.label}}</option>
         </select>
@@ -20,8 +20,9 @@
   import ProfileStore from "../../stores/ProfileStore";
   import BarList from "../BarList.vue";
   import TableList from "../TableList.vue";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: 'Graph',
     components: {
       TableList,
@@ -30,7 +31,8 @@
     data() {
       return {
         ProfileStore: ProfileStore.data,
-        selectedWord: false
+        selectedWord: false,
+        keywordsDict: {}
       };
     },
     methods: {},
@@ -38,17 +40,20 @@
 
       let topics = [];
       let keywords = [];
+      let keywordsDict = {};
       let connections = [];
       let interests = ProfileStore.data.interests;
 
       for (let topicId in interests['topics']) {
         let topic = interests['topics'][topicId];
         topics.push({id: "t" + topicId, label: topic[0][0], color: 'red', 'font':{color:'white'}});
+        keywordsDict["t" + topicId] = topic[0][0];
       }
 
       for (let wordId in interests['keywords']) {
         let word = interests['keywords'][wordId];
         keywords.push({id: "w" + wordId, label: word['word'], color: '#007bff', 'font':{color:'white'}});
+        keywordsDict["w" + wordId] = word['word'];
         for (let link in word['topics']) {
           connections.push({from: "w" +  wordId, to: "t" + word['topics'][link][0]});
         }
@@ -57,6 +62,7 @@
       console.log(topics);
       console.log(keywords);
 
+      this.$data.keywordsDict = keywordsDict;
 
       var nodes = new vis.DataSet(topics.concat(keywords));
 
@@ -64,7 +70,7 @@
       var edges = new vis.DataSet(connections);
 
       // create a network
-      var container = document.getElementById('mynetwork');
+      var container = this.$refs.mynetwork;//document.getElementById('mynetwork');
       var data = {
         nodes: nodes,
         edges: edges
@@ -72,16 +78,20 @@
       var options = {};
       var network = new vis.Network(container, data, options);
 
+      var self = this;
+
       network.on("selectNode", function (params) {
         console.log('selectNode Event:', params);
-        ProfileStore.data.graph.selected = params;
+        console.log(self.$data.keywords);
+        ProfileStore.data.graph.selected = self.keywordsDict[params['nodes'][0]];//self.keywordsDict[params];
+        console.log(params);
       });
 
     },
     beforeDestroy() {
       ProfileStore.data.graph.selected = false;
     }
-  }
+  })
 </script>
 
 <style>
