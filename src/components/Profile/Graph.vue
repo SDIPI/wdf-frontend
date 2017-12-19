@@ -5,13 +5,13 @@
       <div class="col-9">
         <div id="mynetwork"></div>
       </div>
-      <!--<div class="col-3" v-if="ProfileStore.data.graph.selected">
+      <div class="col-3" v-if="selectedWord">
         <h3 class="mb-0">Word informations</h3>
-        Word <b>{{data.selectedWord}}</b>
+        Word <b>{{ProfileStore.data.graph.selected}}</b>
         <select>
           <option v-for="el in ProfileStore.interestsList">{{el.label}}</option>
         </select>
-      </div>-->
+      </div>
     </div>
   </div>
 </template>

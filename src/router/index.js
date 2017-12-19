@@ -6,6 +6,10 @@ import Graph from '@/components/Profile/Graph'
 import MostVisited from '@/components/Profile/MostVisited'
 import MostWatched from '@/components/Profile/MostWatched'
 import History from '@/components/Profile/History'
+import Contacted from '@/components/Trackers/Contacted'
+import Flow from '@/components/Trackers/Flow'
+import TrackerStats from '@/components/Trackers/Stats'
+import Widespread from '@/components/Trackers/Widespread'
 import General from '@/components/General'
 import Trackers from '@/components/Trackers'
 import Stats from '@/components/Stats'
@@ -23,7 +27,29 @@ export default new Router({
     {
       path: '/trackers',
       name: 'Trackers',
-      component: Trackers
+      component: Trackers,
+      children: [
+        {
+          path: 'contacted',
+          name: 'Contacted',
+          component: Contacted
+        },
+        {
+          path: 'flow',
+          name: 'Flow',
+          component: Flow
+        },
+        {
+          path: 'stats',
+          name: 'TrackerStats',
+          component: TrackerStats
+        },
+        {
+          path: 'widespread',
+          name: 'Widespread',
+          component: Widespread
+        }
+      ]
     },
     {
       path: '/profile',
