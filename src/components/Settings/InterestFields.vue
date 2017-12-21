@@ -10,8 +10,7 @@
 
   let eventHandler = function(name) {
     return function() {
-      console.log(arguments[0]);
-      ProfileStore.data.settingsForm.interests = arguments[0].split(',');
+      ProfileStore.data.settingsForm.interests = arguments[0].split(',').map(el => {return parseInt(el)});
     };
   };
 
@@ -26,7 +25,6 @@
     },
     methods: {},
     mounted() {
-      console.log(ProfileStore.data.interestsList);
       let sel = $('#interests').selectize({
         persist: false,
         createOnBlur: false,

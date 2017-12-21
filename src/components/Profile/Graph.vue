@@ -9,7 +9,7 @@
         <h3 class="mb-0">Word informations</h3>
         Word <b>{{ProfileStore.graph.selected}}</b>
         <select>
-          <option v-for="el in ProfileStore.interestsList">{{el.label}}</option>
+          <option v-for="el in ProfileStore.interestsList" v-if="ProfileStore.settingsForm.interests.indexOf(el.id) > -1">{{el.label}}</option>
         </select>
       </div>
     </div>
@@ -70,7 +70,7 @@
       var edges = new vis.DataSet(connections);
 
       // create a network
-      var container = this.$refs.mynetwork;//document.getElementById('mynetwork');
+      var container = this.$refs.mynetwork;
       var data = {
         nodes: nodes,
         edges: edges
@@ -79,12 +79,11 @@
       var network = new vis.Network(container, data, options);
 
       var self = this;
+      var ps = ProfileStore;
 
       network.on("selectNode", function (params) {
         console.log('selectNode Event:', params);
-        console.log(self.$data.keywords);
-        ProfileStore.data.graph.selected = self.keywordsDict[params['nodes'][0]];//self.keywordsDict[params];
-        console.log(params);
+        ps.data.graph.selected = self.keywordsDict[params['nodes'][0]];//self.keywordsDict[params];
       });
 
     },
