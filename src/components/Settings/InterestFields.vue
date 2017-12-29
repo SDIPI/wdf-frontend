@@ -10,7 +10,7 @@
 
   let eventHandler = function(name) {
     return function() {
-      ProfileStore.data.settingsForm.interests = arguments[0].split(',').map(el => {return parseInt(el)});
+      ProfileStore.data.settingsForm.interests = arguments[0].split(',');
     };
   };
 
@@ -56,6 +56,9 @@
         let value = ProfileStore.data.settingsForm.interests;
         control.setValue(value);
       }
+    },
+    beforeDestroy() {
+      ProfileStore.data.settingsForm.interests = ProfileStore.data.settingsForm.interests.map(el => {return parseInt(el)});
     }
   }
 </script>

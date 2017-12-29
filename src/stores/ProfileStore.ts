@@ -92,7 +92,62 @@ interface ProfileStoreData {
       selected: false | number
     },
     urlsTopic: {},
-    loading: boolean
+    loading: boolean,
+    api: {
+      connectionState?: {
+        wdfId: number
+      },
+      mostVisitedSites?: {
+        count: number,
+        url: string,
+        words: {
+          tfidf: number,
+          word: string
+        }[]
+      }[],
+      mostWatchedSites?: {
+        time: number,
+        url: string,
+        words: {
+          tfidf: number,
+          word: string
+        }[]
+      }[],
+      interests?: {
+        keywords: {
+          [wordId: string]: {
+            topics: number[],
+            word: string
+          }},
+        topics: {
+          [topicId: string]: [string, number][]
+        }
+      },
+      historySites?: {
+        day: string,
+        sumAmount: number,
+        url: string,
+        wdfId: string
+      }[],
+      oldestEntry?: {
+        date: string
+      },
+      nbDocuments?: {
+        count: number
+      },
+      interestsList?: {
+        id: number,
+        name: string
+      }[],
+      getInterests?: {
+        interest_id: number,
+        user_id: number
+      }[],
+      getUrlsTopic?: {
+        topic: string,
+        url: string
+      }[]
+    }
   },
   methods: {
     connectionState: () => Promise<any>,
@@ -143,7 +198,10 @@ const ProfileStore: ProfileStoreData = {
       selected: false
     },
     urlsTopic: {},
-    loading: true
+    loading: true,
+    api: {
+
+    }
   },
   methods: {
     connectionState() {
@@ -418,5 +476,7 @@ const ProfileStore: ProfileStoreData = {
     },
   }
 };
+
+setInterval(() => {console.log(ProfileStore.data.settingsForm.interests);}, 1000);
 
 export default ProfileStore;

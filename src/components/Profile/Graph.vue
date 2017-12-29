@@ -6,11 +6,13 @@
         <div ref="mynetwork" id="mynetwork"></div>
       </div>
       <div class="col-3" v-if="ProfileStore.graph.selected">
-        <h3 class="mb-0">Word informations</h3>
+        <h3 class="mb-0">Related interest field</h3>
         Word <b>{{ProfileStore.graph.selected}}</b>
         <select>
           <option v-for="el in ProfileStore.interestsList" v-if="ProfileStore.settingsForm.interests.indexOf(el.id) > -1">{{el.label}}</option>
         </select>
+        <br>
+        <button type="submit" v-on:click="" class="btn btn-primary">Submit</button>
       </div>
     </div>
   </div>
