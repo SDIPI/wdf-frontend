@@ -1,6 +1,6 @@
 <template>
   <div id="profile">
-    <h1 class="display-4">General</h1>
+    <h1>General</h1>
 
     <p>
       Welcome to your dashboard of Web Digital Footprints.

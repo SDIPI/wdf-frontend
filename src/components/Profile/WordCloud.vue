@@ -1,7 +1,15 @@
 <template>
   <div>
-    <h2 class="mb-0">Wordcloud</h2>
+    <h2 class="mb-0">
+      Wordcloud
+    </h2>
     <div id="vis"></div>
+    <p>
+      <span class="hint badge badge-secondary" data-toggle="tooltip" data-placement="bottom"
+            title="This page shows a purely visual representation of the words you read the most while navigating.
+            The top 50 words you read the most often are displayed here.
+            A bigger word means it you read it more often.">What is this ?</span>
+    </p>
   </div>
 </template>
 
@@ -10,6 +18,12 @@
 
   function tfIdf(tf, df, documents) {
     return tf * Math.log(documents / df);
+  }
+
+  function enableTooltips() {
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    });
   }
 
   function drawCloud() {
@@ -122,6 +136,7 @@
     methods: {},
     mounted() {
       drawCloud();
+      enableTooltips();
     }
   }
 </script>

@@ -23,27 +23,27 @@
           </li>
         </ul>
       </div>
-    </div>
-    <div id="exampleAccordion" data-children=".item">
-      <div class="item">
-        <a class="dropdown-toggle" data-toggle="collapse" data-parent="#exampleAccordion" href="#exampleAccordion1" aria-expanded="true" aria-controls="exampleAccordion1">
-          Filter by date
-        </a>
-        <div id="exampleAccordion1" class="collapse" role="tabpanel">
-          <form class="form-inline filter" v-on:submit.prevent>
-            <div class="form-group">
-              <label for="startDate">From</label>
-              <input type="date" v-model="ProfileStore.filterForm.startDate" :min="ProfileStore.oldest" :max="Utils.today()" class="form-control mx-sm-3" placeholder="Start date" id="startDate">
-              <label for="endDate">To</label>
-              <input type="date" v-model="ProfileStore.filterForm.endDate" :min="ProfileStore.oldest" :max="Utils.today()" class="form-control mx-sm-3" placeholder="End date" id="endDate">
+      <div class="col-md-auto after-tabs">
+        <div class="btn-group">
+          <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Date filter
+          </button>
+            <form class="dropdown-menu p-4 dropdown-menu-right" v-on:submit.prevent>
+              <div class="form-group">
+                <label for="startDate">From</label>
+                <input type="date" v-model="ProfileStore.filterForm.startDate" :min="ProfileStore.oldest" :max="Utils.today()" class="form-control" placeholder="Start date" id="startDate">
+              </div>
+              <div class="form-group">
+                <label for="endDate">To</label>
+                <input type="date" v-model="ProfileStore.filterForm.endDate" :min="ProfileStore.oldest" :max="Utils.today()" class="form-control" placeholder="End date" id="endDate">
+              </div>
               <button type="submit" class="btn btn-primary" v-on:click="refreshProfileStoreWithDates(true)" :disabled="ProfileStore.loading">Apply</button>
-            </div>
-          </form>
+            </form>
         </div>
       </div>
     </div>
 
-    <router-view v-if="!ProfileStore.loading"></router-view>
+    <router-view v-if="!ProfileStore.loading" class="router-view"></router-view>
 
     <div class="loader" v-if="ProfileStore.loading"></div>
     <div class="middleText" v-if="ProfileStore.loading">Loading data from server</div>
@@ -57,7 +57,7 @@
   .blue a.router-link-active {
     color: #000 !important;
     border-color: #dee2e6 #dee2e6 #fff !important;
-    /*background-color: #007bff;*/
+    background: linear-gradient(#343a40, #343a40 5%, white 5%);
   }
 
   .filter {
@@ -91,11 +91,26 @@
 
   .contains-tabs {
     padding-left: 0;
+    padding-right: 0;
   }
 
   .before-tabs {
     margin-left: 15px;
     padding-left: 0;
     border-bottom: 1px solid #dee2e6;
+  }
+
+  .after-tabs {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  .router-view {
+    margin-top: 14px;
+  }
+
+  #profile {
+    margin-top: 4px;
   }
 </style>

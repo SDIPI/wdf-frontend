@@ -1,6 +1,6 @@
 <template>
   <div id="profile">
-    <h1 class="display-4">Settings</h1>
+    <h1>Settings</h1>
 
     <div v-if="!ProfileStore.loading">
       <interestfields></interestfields>

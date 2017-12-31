@@ -92,4 +92,12 @@
     background-color: #ffffff;
     line-height: 2em;
   }
+
+  .hint {
+    opacity: 0.4;
+  }
+
+  :hover > .hint {
+    opacity: 1;
+  }
 </style>

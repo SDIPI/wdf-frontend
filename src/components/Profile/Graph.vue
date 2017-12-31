@@ -1,13 +1,13 @@
 <template>
   <div>
-    <h2 class="mb-0">Topics graph</h2>
     <div class="row">
       <div class="col-9">
+        <h2 class="mb-0">Topics graph</h2>
         <div ref="mynetwork" id="mynetwork"></div>
       </div>
       <div class="col-3" v-if="ProfileStore.graph.selected">
-        <h3 class="mb-0">Related interest</h3>
-        Word <b>{{ProfileStore.graph.selected}}</b>
+        <h3 class="mb-0">Selected</h3>
+        Word <b>{{ProfileStore.graph.selected}}</b><br/>
         <select>
           <option v-for="el in ProfileStore.interestsList" v-if="ProfileStore.settingsForm.interests.indexOf(el.id) > -1">{{el.label}}</option>
         </select>
@@ -15,6 +15,11 @@
         <button type="submit" v-on:click="" class="btn btn-primary">Submit</button>
       </div>
     </div>
+    <p>
+      <span class="hint badge badge-secondary" data-toggle="tooltip" data-placement="bottom"
+            title="This page shows a guess at which topics and words you're the probably the most interested to.
+            Each red bubble is a topic, each blue bubble is a word. A topic is linked to multiple words.">What is this ?</span>
+    </p>
   </div>
 </template>
 
@@ -23,6 +28,12 @@
   import BarList from "../BarList.vue";
   import TableList from "../TableList.vue";
   import Vue from "vue";
+
+  function enableTooltips() {
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    });
+  }
 
   export default Vue.extend({
     name: 'Graph',
@@ -39,6 +50,8 @@
     },
     methods: {},
     mounted() {
+
+      enableTooltips();
 
       let topics = [];
       let keywords = [];
