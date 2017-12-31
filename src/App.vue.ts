@@ -18,6 +18,7 @@ export default Vue.extend({
   },
   beforeMount() {
     let oldestP = ProfileStore.methods.refreshOldest().then(() => {
+      ProfileStore.methods.computeOldest();
       ProfileStore.data.filterForm.startDate = ProfileStore.data.oldest;
     });
     ProfileStore.methods.refreshEverything(false);

@@ -1,6 +1,29 @@
 <template>
   <div id="profile">
-    <h1 class="display-4">Profile</h1>
+    <div class="row">
+      <div class="col-md-auto before-tabs">
+        <h1>Profile</h1>
+      </div>
+      <div class="col contains-tabs">
+        <ul class="nav nav-tabs nav-fill blue">
+          <li class="nav-item">
+            <router-link class="nav-link" to="/profile/wordcloud">Wordcloud</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/profile/graph">Topics graph</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/profile/mostvisited">Most Visited</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/profile/mostwatched">Most Watched</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/profile/history">History</router-link>
+          </li>
+        </ul>
+      </div>
+    </div>
     <div id="exampleAccordion" data-children=".item">
       <div class="item">
         <a class="dropdown-toggle" data-toggle="collapse" data-parent="#exampleAccordion" href="#exampleAccordion1" aria-expanded="true" aria-controls="exampleAccordion1">
@@ -20,24 +43,6 @@
       </div>
     </div>
 
-    <ul class="nav nav-pills nav-fill blue">
-      <li class="nav-item">
-        <router-link class="nav-link" to="/profile/wordcloud">Wordcloud</router-link>
-      </li>
-      <li class="nav-item">
-        <router-link class="nav-link" to="/profile/graph">Topics graph</router-link>
-      </li>
-      <li class="nav-item">
-        <router-link class="nav-link" to="/profile/mostvisited">Most Visited</router-link>
-      </li>
-      <li class="nav-item">
-        <router-link class="nav-link" to="/profile/mostwatched">Most Watched</router-link>
-      </li>
-      <li class="nav-item">
-        <router-link class="nav-link" to="/profile/history">History</router-link>
-      </li>
-    </ul>
-
     <router-view v-if="!ProfileStore.loading"></router-view>
 
     <div class="loader" v-if="ProfileStore.loading"></div>
@@ -50,8 +55,9 @@
 
 <style>
   .blue a.router-link-active {
-    color: #fff !important;
-    background-color: #007bff;
+    color: #000 !important;
+    border-color: #dee2e6 #dee2e6 #fff !important;
+    /*background-color: #007bff;*/
   }
 
   .filter {
@@ -76,5 +82,20 @@
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+
+  ul.nav {
+    height: 100%;
+    align-items: flex-end;
+  }
+
+  .contains-tabs {
+    padding-left: 0;
+  }
+
+  .before-tabs {
+    margin-left: 15px;
+    padding-left: 0;
+    border-bottom: 1px solid #dee2e6;
   }
 </style>
