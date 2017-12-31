@@ -29,8 +29,13 @@
     },
     methods: {
       sendInterests() {
+        ProfileStore.data.loading = true;
         ProfileStore.methods.sendInterests(ProfileStore.data.settingsForm.interests).then(() => {
-          this.showalert("Interest fields saved successfully.", 'success');
+          ProfileStore.methods.refreshUserInterests().then(() => {
+            ProfileStore.methods.computeUserInterests();
+            ProfileStore.data.loading = false;
+            this.showalert("Interest fields saved successfully.", 'success');
+          });
         });
       },
       showalert(message, alerttype) {

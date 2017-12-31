@@ -61,6 +61,7 @@
       ProfileStore.data.settingsForm.interests = ProfileStore.data.settingsForm.interests.map(el => {return parseInt(el)});
     }
   }
+
 </script>
 
 <style>

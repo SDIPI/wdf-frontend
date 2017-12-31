@@ -1,12 +1,12 @@
 <template>
   <div>
-    <h2 class="mb-0">Interests graph</h2>
+    <h2 class="mb-0">Topics graph</h2>
     <div class="row">
       <div class="col-9">
         <div ref="mynetwork" id="mynetwork"></div>
       </div>
       <div class="col-3" v-if="ProfileStore.graph.selected">
-        <h3 class="mb-0">Related interest field</h3>
+        <h3 class="mb-0">Related interest</h3>
         Word <b>{{ProfileStore.graph.selected}}</b>
         <select>
           <option v-for="el in ProfileStore.interestsList" v-if="ProfileStore.settingsForm.interests.indexOf(el.id) > -1">{{el.label}}</option>
@@ -44,7 +44,7 @@
       let keywords = [];
       let keywordsDict = {};
       let connections = [];
-      let interests = ProfileStore.data.interests;
+      let interests = ProfileStore.data.topics;
 
       for (let topicId in interests['topics']) {
         let topic = interests['topics'][topicId];
