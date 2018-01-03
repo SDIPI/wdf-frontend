@@ -8,11 +8,12 @@
       <div class="col-3" v-if="ProfileStore.graph.selected">
         <h3 class="mb-0">Selected</h3>
         Word <b>{{ProfileStore.graph.selected}}</b><br/>
-        <select>
-          <option v-for="el in ProfileStore.interestsList" v-if="ProfileStore.settingsForm.interests.indexOf(el.id) > -1">{{el.label}}</option>
+        <select ref="interestField">
+          <option value="-1"></option>
+          <option v-for="el in ProfileStore.interestsList" v-if="ProfileStore.settingsForm.interests.indexOf(el.id) > -1" :value="el.id" :onchange="selectChanged()">{{el.label}}</option>
         </select>
         <br>
-        <button type="submit" v-on:click="" class="btn btn-primary">Submit</button>
+        <button type="submit" v-on:click="sendTag()" class="btn btn-primary">Submit</button>
       </div>
     </div>
     <p>
@@ -48,7 +49,14 @@
         keywordsDict: {}
       };
     },
-    methods: {},
+    methods: {
+      sendTag() {
+        ProfileStore.methods.sendTag(ProfileStore.data.graph.interest, ProfileStore.data.graph.selected);
+      },
+      selectChanged() {
+        ProfileStore.data.graph.interest = this.$refs.interestField; // TODO : Save id instead of string of tag
+      }
+    },
     mounted() {
 
       enableTooltips();
@@ -99,6 +107,9 @@
       network.on("selectNode", function (params) {
         console.log('selectNode Event:', params);
         ps.data.graph.selected = self.keywordsDict[params['nodes'][0]];//self.keywordsDict[params];
+        if (self.$refs.interestField) {
+          self.$refs.interestField.value = -1;
+        }
       });
 
     },

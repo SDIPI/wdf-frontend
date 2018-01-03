@@ -89,7 +89,8 @@ interface ProfileStoreData {
       interests?: any
     },
     graph: {
-      selected: false | number
+      selected: false | string,
+      interest?: false | number
     },
     urlsTopic: {},
     loading: boolean,
@@ -171,7 +172,8 @@ interface ProfileStoreData {
     refreshUrlsTopic: () => Promise<any>,
     computeUrlsTopic: () => void,
     refreshEverything: (boolean) => Promise<any>,
-    sendInterests: (any) => Promise<any>
+    sendInterests: (any) => Promise<any>,
+    sendTag: (number, string) => Promise<any>,
   }
 }
 
@@ -204,7 +206,8 @@ const ProfileStore: ProfileStoreData = {
       interests: null
     },
     graph: {
-      selected: false
+      selected: false,
+      interest: undefined
     },
     urlsTopic: {},
     loading: true,
@@ -561,6 +564,15 @@ const ProfileStore: ProfileStoreData = {
     sendInterests(interests: any[]) {
       let queryString = "?data=" + interests;
       return fetch(ProfileStore.data.apiBase + "/api/setInterests" + queryString, {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          console.log(data);
+        });
+    },
+
+    sendTag(interestId: number, word: string) {
+      let queryString = "?interestId=" + interestId + "&word=" + word;
+      return fetch(ProfileStore.data.apiBase + "/api/setTag" + queryString, {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
           console.log(data);
