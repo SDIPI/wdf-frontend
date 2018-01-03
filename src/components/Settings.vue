@@ -5,6 +5,10 @@
     <div v-if="!ProfileStore.loading">
       <interestfields></interestfields>
       <button type="submit" v-on:click="sendInterests()" class="btn btn-primary">Submit</button>
+      <p class="whatsthis">
+        <span class="hint badge badge-secondary" data-toggle="tooltip" data-placement="bottom"
+            title="You can help us classify web sites and online content by telling us what are your general interests in life, and then assign them in the 'Topics graph' tab.">What is this ?</span>
+      </p>
     </div>
 
     <div class="loader" v-if="ProfileStore.loading"></div>
@@ -16,6 +20,12 @@
 <script>
   import ProfileStore from "../stores/ProfileStore";
   import InterestFields from "./Settings/InterestFields";
+
+  function enableTooltips() {
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    });
+  }
 
   export default {
     name: 'Settings',
@@ -56,6 +66,7 @@
         searchField: ['id', 'name', 'label'],
         options: ProfileStore.interestsList
       });
+      enableTooltips();
     }
   }
 </script>
@@ -63,5 +74,9 @@
 <style>
   #alertdiv {
     display: inline-table;
+  }
+
+  .whatsthis {
+    margin-top: 16px;
   }
 </style>

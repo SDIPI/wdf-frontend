@@ -15,7 +15,7 @@
               <router-link class="nav-link exact" to="/">General</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="/profile">Profile</router-link>
+              <router-link class="nav-link" to="/profile/mostvisited">Profile</router-link>
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link disabled" tabindex="-1">Trackers</a>
@@ -89,7 +89,6 @@
     right: 0;
     z-index: 2;
     text-align: center;
-    background-color: #ffffff;
     line-height: 2em;
   }
 
