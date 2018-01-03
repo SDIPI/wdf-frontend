@@ -90,7 +90,8 @@ interface ProfileStoreData {
     },
     graph: {
       selected: false | string,
-      interest?: false | number
+      interest?: false | number,
+      formChanged: boolean
     },
     urlsTopic: {},
     loading: boolean,
@@ -147,6 +148,11 @@ interface ProfileStoreData {
       getUrlsTopic?: {
         topic: string,
         url: string
+      }[],
+      getTags?: {
+        interest_id: number,
+        user_id: number,
+        word: string
       }[]
     }
   },
@@ -174,6 +180,7 @@ interface ProfileStoreData {
     refreshEverything: (boolean) => Promise<any>,
     sendInterests: (any) => Promise<any>,
     sendTag: (number, string) => Promise<any>,
+    refreshTags: () => Promise<any>
   }
 }
 
@@ -207,7 +214,8 @@ const ProfileStore: ProfileStoreData = {
     },
     graph: {
       selected: false,
-      interest: undefined
+      interest: undefined,
+      formChanged: false
     },
     urlsTopic: {},
     loading: true,
@@ -524,7 +532,10 @@ const ProfileStore: ProfileStoreData = {
 
           let historyP = ProfileStore.methods.refreshHistory(dates);
           let topicsP = ProfileStore.methods.refreshTopics();
-          Promise.all([visitedSitesP, watchedSitesP, userInterestsP, urlsTopicP, historyP, topicsP, iListP]).then(() => {
+
+          let tagsP = ProfileStore.methods.refreshTags();
+
+          Promise.all([visitedSitesP, watchedSitesP, userInterestsP, urlsTopicP, historyP, topicsP, iListP, tagsP]).then(() => {
             ProfileStore.methods.computeVisitedSites();
             ProfileStore.methods.computeWatchedSites();
             ProfileStore.methods.computeInterestsList();
@@ -535,8 +546,6 @@ const ProfileStore: ProfileStoreData = {
             ProfileStore.methods.computeHistory();
             ProfileStore.methods.computeTopics();
             ProfileStore.data.loading = false;
-
-
           });
         }
       });
@@ -570,12 +579,20 @@ const ProfileStore: ProfileStoreData = {
         });
     },
 
+    // TAGS
     sendTag(interestId: number, word: string) {
       let queryString = "?interestId=" + interestId + "&word=" + word;
       return fetch(ProfileStore.data.apiBase + "/api/setTag" + queryString, {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
           console.log(data);
+        });
+    },
+    refreshTags() {
+      return fetch(ProfileStore.data.apiBase + "/api/getTags", {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          ProfileStore.data.api.getTags = data;
         });
     },
   }

@@ -8,12 +8,12 @@
       <div class="col-3" v-if="ProfileStore.graph.selected">
         <h3 class="mb-0">Selected</h3>
         Word <b>{{ProfileStore.graph.selected}}</b><br/>
-        <select ref="interestField">
+        Related interest : <select ref="interestField" v-on:change="selectChanged()">
           <option value="-1"></option>
-          <option v-for="el in ProfileStore.interestsList" v-if="ProfileStore.settingsForm.interests.indexOf(el.id) > -1" :value="el.id" :onchange="selectChanged()">{{el.label}}</option>
+          <option v-for="el in ProfileStore.interestsList" v-if="ProfileStore.settingsForm.interests.indexOf(el.id) > -1" :value="el.id">{{el.label}}</option>
         </select>
         <br>
-        <button type="submit" v-on:click="sendTag()" class="btn btn-primary">Submit</button>
+        <button v-if="ProfileStore.graph.formChanged" type="submit" v-on:click="sendTag()" class="btn btn-primary">Submit</button>
       </div>
     </div>
     <p>
@@ -51,10 +51,23 @@
     },
     methods: {
       sendTag() {
-        ProfileStore.methods.sendTag(ProfileStore.data.graph.interest, ProfileStore.data.graph.selected);
+        ProfileStore.methods.sendTag(ProfileStore.data.graph.interest, ProfileStore.data.graph.selected).then(() => {
+          this.showalert("Related interest saved successfully.", 'success');
+          ProfileStore.data.graph.formChanged = false;
+        });
       },
       selectChanged() {
-        ProfileStore.data.graph.interest = this.$refs.interestField; // TODO : Save id instead of string of tag
+        if (this.$refs.interestField) {
+          console.log(this.$refs.interestField.value);
+          ProfileStore.data.graph.interest = this.$refs.interestField.value;
+          ProfileStore.data.graph.formChanged = true;
+        }
+      },
+      showalert(message, alerttype) {
+        $('#alert_placeholder').append('<div id="alertdiv" class="alert alert-' + alerttype + '"><a class="close" data-dismiss="alert">×</a><span>' + message + '</span></div>')
+        setTimeout(function () { // this will automatically close the alert and remove this if the users doesnt close it in 5 secs
+          $("#alertdiv").remove();
+        }, 3000);
       }
     },
     mounted() {
@@ -108,7 +121,16 @@
         console.log('selectNode Event:', params);
         ps.data.graph.selected = self.keywordsDict[params['nodes'][0]];//self.keywordsDict[params];
         if (self.$refs.interestField) {
-          self.$refs.interestField.value = -1;
+          let value = -1;
+          for (let i in ProfileStore.data.api.getTags) {
+            let tag = ProfileStore.data.api.getTags[i];
+            console.log("test");
+            if (tag.word === ps.data.graph.selected) {
+              value = tag.interest_id;
+            }
+          }
+          self.$refs.interestField.value = value;
+          ProfileStore.data.graph.formChanged = false;
         }
       });
 

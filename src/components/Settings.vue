@@ -34,7 +34,7 @@
           ProfileStore.methods.refreshUserInterests().then(() => {
             ProfileStore.methods.computeUserInterests();
             ProfileStore.data.loading = false;
-            this.showalert("Interest fields saved successfully.", 'success');
+            this.showalert("Interest saved successfully.", 'success');
           });
         });
       },
