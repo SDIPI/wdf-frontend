@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="mb-0">General stats</h2>
+    <h2 class="mb-0">Trackers stats</h2>
     <div class="card bg-light mb-3" style="max-width: 20rem;">
       <div class="card-header">Trackers</div>
       <div class="card-body">

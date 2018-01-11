@@ -22,8 +22,8 @@
               <router-link class="nav-link" to="/trackers">Trackers</router-link>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link disabled" tabindex="-1">Stats</a>
-              <!--<router-link class="nav-link" to="/stats">Stats</router-link>-->
+              <!--<a href="#" class="nav-link disabled" tabindex="-1">Stats</a>-->
+              <router-link class="nav-link" to="/stats">Stats</router-link>
             </li>
           </ul>
           <ul class="navbar-nav justify-content-end">

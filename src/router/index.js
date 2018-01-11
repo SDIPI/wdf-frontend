@@ -57,6 +57,10 @@ export default new Router({
       component: Profile,
       children: [
         {
+          path: '',
+          redirect: 'wordcloud'
+        },
+        {
           path: 'wordcloud',
           name: 'WordCloud',
           component: WordCloud

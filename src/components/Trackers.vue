@@ -40,10 +40,10 @@
       </div>
     </div>
 
-    <router-view v-if="!ProfileStore.loading" class="router-view"></router-view>
+    <router-view v-if="!ProfileStore.loadingTrackers" class="router-view"></router-view>
 
-    <div class="loader" v-if="ProfileStore.loading"></div>
-    <div class="middleText" v-if="ProfileStore.loading">Loading data from server</div>
+    <div class="loader" v-if="ProfileStore.loadingTrackers"></div>
+    <div class="middleText" v-if="ProfileStore.loadingTrackers">Loading data from server</div>
 
   </div>
 </template>

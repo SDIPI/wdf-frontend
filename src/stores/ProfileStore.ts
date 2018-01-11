@@ -95,6 +95,8 @@ interface ProfileStoreData {
     },
     urlsTopic: {},
     loading: boolean,
+    loadingTrackers: boolean,
+    loadingStats: boolean,
     api: {
       connectionState?: {
         wdfId: number
@@ -164,6 +166,10 @@ interface ProfileStoreData {
       }[],
       getTrackersStats?: {
         nbTrackers: number
+      },
+      getGeneralStats?: {
+        totalRequests: number,
+        trackersNb: number
       }
     }
   },
@@ -194,7 +200,8 @@ interface ProfileStoreData {
     refreshTags: () => Promise<any>,
     refreshMostPresentTrackers: (any) => Promise<any>,
     refreshMostRevealingDomains: (any) => Promise<any>,
-    refreshTrackersStats: (any) => Promise<any>
+    refreshTrackersStats: (any) => Promise<any>,
+    refreshGeneralStats: () => Promise<any>
   }
 }
 
@@ -233,6 +240,8 @@ const ProfileStore: ProfileStoreData = {
     },
     urlsTopic: {},
     loading: true,
+    loadingTrackers: true,
+    loadingStats: true,
     api: {}
   },
   methods: {
@@ -573,7 +582,9 @@ const ProfileStore: ProfileStoreData = {
           let trackers2P = ProfileStore.methods.refreshMostRevealingDomains(dates);
           let trackers3P = ProfileStore.methods.refreshTrackersStats(dates);
 
-          Promise.all([visitedSitesP, watchedSitesP, userInterestsP, urlsTopicP, historyP, topicsP, iListP, tagsP, trackers1P, trackers2P, trackers3P]).then(() => {
+          let generalStatsP = ProfileStore.methods.refreshGeneralStats();
+
+          Promise.all([visitedSitesP, watchedSitesP, userInterestsP, urlsTopicP, historyP, topicsP, iListP, tagsP]).then(() => {
             ProfileStore.methods.computeVisitedSites();
             ProfileStore.methods.computeWatchedSites();
             ProfileStore.methods.computeInterestsList();
@@ -584,6 +595,14 @@ const ProfileStore: ProfileStoreData = {
             ProfileStore.methods.computeHistory();
             ProfileStore.methods.computeTopics();
             ProfileStore.data.loading = false;
+          });
+
+          Promise.all([trackers1P, trackers2P, trackers3P]).then(() => {
+            ProfileStore.data.loadingTrackers = false;
+          });
+
+          generalStatsP.then(() => {
+            ProfileStore.data.loadingStats = false;
           });
         }
       });
@@ -668,6 +687,15 @@ const ProfileStore: ProfileStoreData = {
         .then(response => response.json())
         .then((data) => {
           ProfileStore.data.api.getTrackersStats = data;
+        });
+    },
+
+    refreshGeneralStats() {
+      let apiUrl = ProfileStore.data.apiBase + "/api/getGeneralStats";
+      return fetch(apiUrl, {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          ProfileStore.data.api.getGeneralStats = data;
         });
     },
   }
