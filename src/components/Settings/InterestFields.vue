@@ -10,6 +10,7 @@
 
   let eventHandler = function(name) {
     return function() {
+      console.log("HEH");
       ProfileStore.data.settingsForm.interests = arguments[0].split(',');
     };
   };
