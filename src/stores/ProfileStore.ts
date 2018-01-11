@@ -153,7 +153,18 @@ interface ProfileStoreData {
         interest_id: number,
         user_id: number,
         word: string
-      }[]
+      }[],
+      getMostPresentTrackers?: {
+        count: number,
+        requestDomain: string
+      }[],
+      getMostRevealingDomains?: {
+        count: number,
+        requestDomain: string
+      }[],
+      getTrackersStats?: {
+        nbTrackers: number
+      }
     }
   },
   methods: {
@@ -180,7 +191,10 @@ interface ProfileStoreData {
     refreshEverything: (boolean) => Promise<any>,
     sendInterests: (any) => Promise<any>,
     sendTag: (number, string) => Promise<any>,
-    refreshTags: () => Promise<any>
+    refreshTags: () => Promise<any>,
+    refreshMostPresentTrackers: (any) => Promise<any>,
+    refreshMostRevealingDomains: (any) => Promise<any>,
+    refreshTrackersStats: (any) => Promise<any>
   }
 }
 
@@ -555,7 +569,11 @@ const ProfileStore: ProfileStoreData = {
 
           let tagsP = ProfileStore.methods.refreshTags();
 
-          Promise.all([visitedSitesP, watchedSitesP, userInterestsP, urlsTopicP, historyP, topicsP, iListP, tagsP]).then(() => {
+          let trackers1P = ProfileStore.methods.refreshMostPresentTrackers(dates);
+          let trackers2P = ProfileStore.methods.refreshMostRevealingDomains(dates);
+          let trackers3P = ProfileStore.methods.refreshTrackersStats(dates);
+
+          Promise.all([visitedSitesP, watchedSitesP, userInterestsP, urlsTopicP, historyP, topicsP, iListP, tagsP, trackers1P, trackers2P, trackers3P]).then(() => {
             ProfileStore.methods.computeVisitedSites();
             ProfileStore.methods.computeWatchedSites();
             ProfileStore.methods.computeInterestsList();
@@ -613,6 +631,43 @@ const ProfileStore: ProfileStoreData = {
         .then(response => response.json())
         .then((data) => {
           ProfileStore.data.api.getTags = data;
+        });
+    },
+
+    // TRACKERS
+    refreshMostPresentTrackers(dates: boolean) {
+      let apiUrl = ProfileStore.data.apiBase + "/api/getMostPresentTrackers";
+      if (dates) {
+        apiUrl += "?from=" + ProfileStore.data.filterForm.startDate + "&to=" + ProfileStore.data.filterForm.endDate
+      }
+      return fetch(apiUrl, {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          ProfileStore.data.api.getMostPresentTrackers = data;
+        });
+    },
+
+    refreshMostRevealingDomains(dates: boolean) {
+      let apiUrl = ProfileStore.data.apiBase + "/api/getMostRevealingDomains";
+      if (dates) {
+        apiUrl += "?from=" + ProfileStore.data.filterForm.startDate + "&to=" + ProfileStore.data.filterForm.endDate
+      }
+      return fetch(apiUrl, {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          ProfileStore.data.api.getMostRevealingDomains = data;
+        });
+    },
+
+    refreshTrackersStats(dates: boolean) {
+      let apiUrl = ProfileStore.data.apiBase + "/api/getTrackersStats";
+      if (dates) {
+        apiUrl += "?from=" + ProfileStore.data.filterForm.startDate + "&to=" + ProfileStore.data.filterForm.endDate
+      }
+      return fetch(apiUrl, {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          ProfileStore.data.api.getTrackersStats = data;
         });
     },
   }

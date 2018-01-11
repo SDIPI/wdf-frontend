@@ -7,7 +7,7 @@
       <div class="col contains-tabs">
         <ul class="nav nav-tabs nav-fill blue">
           <li class="nav-item">
-            <router-link class="nav-link" to="/trackers/widespread">Most widespread</router-link>
+            <router-link class="nav-link" to="/trackers/widespread">Most revealing</router-link>
           </li>
           <li class="nav-item">
             <router-link class="nav-link" to="/trackers/contacted">Most contacted</router-link>
@@ -15,9 +15,9 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/trackers/stats">Stats</router-link>
           </li>
-          <li class="nav-item">
+          <!--<li class="nav-item">
             <router-link class="nav-link" to="/trackers/flow">Information flux</router-link>
-          </li>
+          </li>-->
         </ul>
       </div>
       <div class="col-md-auto after-tabs">

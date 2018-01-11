@@ -2,10 +2,10 @@
   <div>
     <h2 class="mb-0">General stats</h2>
     <div class="card bg-light mb-3" style="max-width: 20rem;">
-      <div class="card-header">Stat title</div>
+      <div class="card-header">Trackers</div>
       <div class="card-body">
-        <h4 class="card-title">40%</h4>
-        <p class="card-text">of this content is still unfinished.</p>
+        <h4 class="card-title">{{ ProfileStore.api.getTrackersStats.nbTrackers }}</h4>
+        <p class="card-text">different trackers were contacted.</p>
       </div>
     </div>
   </div>

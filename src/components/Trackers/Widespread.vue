@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h2 class="mb-0">Most widespread trackers</h2>
-    <BarExtendedList :list="ProfileStore.visitedSites" :labels="['Page', 'Keywords', 'Views']" :keyLabel="'url'" :keyValue1="'words'" :keyValue2="'count'" :valueF1="(function(e) {return e.slice(0, 3).map((e) => {return e.word}).join(' ')})"></BarExtendedList>
+    <h2 class="mb-0">Most revealing domains</h2>
+    <BarList :list="ProfileStore.api.getMostRevealingDomains" :labels="['Domain', 'Requests']" :keyLabel="'urlDomain'" :keyValue="'count'" :valueF1="(function(e) {return e.slice(0, 3).map((e) => {return e.word}).join(' ')})"></BarList>
   </div>
 </template>
 
