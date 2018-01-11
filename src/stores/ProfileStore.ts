@@ -423,6 +423,7 @@ const ProfileStore: ProfileStoreData = {
         /* --- History by topic --- */
         let resultTopics = {};
         let resultTopicsList: any[] = [];
+        let topicTotal = {};
         // data = data.splice(0,5);
         for (let entryI in data) {
           let entry = data[entryI];
@@ -434,16 +435,35 @@ const ProfileStore: ProfileStoreData = {
           if (!(newEl[0] in resultTopics[topic])) {
             resultTopics[topic][newEl[0]] = 0;
           }
+          if (!(topic in topicTotal)) {
+            topicTotal[topic] = 0;
+          }
           resultTopics[topic][newEl[0]] += newEl[1];
+          topicTotal[topic] += entry.sumAmount;
         }
         delete resultTopics["undefined"]; // :thinking:
+        let topicTotalList: any[] = [];
+        for (let topicWords in topicTotal) {
+          topicTotalList.push({topic: topicWords, value: topicTotal[topicWords]});
+        }
+        topicTotalList.sort((a, b) => {
+          return (b['value'] - a['value'])
+        });
+        topicTotalList = topicTotalList.splice(0, 10);
+        let topTopics = topicTotalList.map(key => {return key['topic']});
+        console.log("TOPICS : ! : ! ");
+        console.log(topTopics);
         for (let el in resultTopics) {
           let resultTopic = resultTopics[el];
           let resultTopicList: {data: any[], name: string}[] = [];
           let dataTopicList: any[] = [];
-          let dataTopic = Object.keys(resultTopic).map(key => {dataTopicList.push([parseInt(key), resultTopic[key]])});
-          // resultTopic.map(el => {resultTopicList.push({name: el.name, data: dataTopic})});
-          resultTopicsList.push({name: el, data:dataTopicList});
+          if (topTopics.indexOf(el) > -1) {
+            let dataTopic = Object.keys(resultTopic).map(key => {
+              dataTopicList.push([parseInt(key), resultTopic[key]]);
+            });
+            // resultTopic.map(el => {resultTopicList.push({name: el.name, data: dataTopic})});
+            resultTopicsList.push({name: el, data:dataTopicList});
+          }
         }
         console.log(resultTopics);
         console.log(resultTopicsList);

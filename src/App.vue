@@ -18,8 +18,8 @@
               <router-link class="nav-link" to="/profile">Profile</router-link>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link disabled" tabindex="-1">Trackers</a>
-              <!--<router-link class="nav-link" to="/trackers">Trackers</router-link>-->
+              <!--<a href="#" class="nav-link disabled" tabindex="-1">Trackers</a>-->
+              <router-link class="nav-link" to="/trackers">Trackers</router-link>
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link disabled" tabindex="-1">Stats</a>
