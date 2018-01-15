@@ -62,7 +62,7 @@ function groupByDomain(data, key: string) {
 
 interface ProfileStoreData {
   data: {
-    apiBase: "http://df.sdipi.ch:5000",
+    apiBase: string,
     visitedSites: any[],
     visitedDomains: any[],
     watchedSites: any[],
