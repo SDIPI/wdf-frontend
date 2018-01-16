@@ -93,6 +93,26 @@ interface ProfileStoreData {
       interest?: false | number,
       formChanged: boolean
     },
+    trackers: {
+      [from: string]: {
+        [to: string]: {
+          amount: number,
+          size: number
+        }
+      }
+    },
+    trackersPage:{
+      mostSending: {
+        from: string,
+        amount: number,
+        size: number
+      }[],
+      mostRecieving: {
+        to: string,
+        amount: number,
+        size: number
+      }[]
+    }
     urlsTopic: {},
     loading: boolean,
     loadingTrackers: boolean,
@@ -156,6 +176,13 @@ interface ProfileStoreData {
         user_id: number,
         word: string
       }[],
+      getTrackers?: {
+        amount: number,
+        reqDomain: string,
+        size: number,
+        urlDomain: string,
+        wdfId: number
+      }[]
       getMostPresentTrackers?: {
         count: number,
         requestDomain: string
@@ -201,13 +228,15 @@ interface ProfileStoreData {
     refreshMostPresentTrackers: (any) => Promise<any>,
     refreshMostRevealingDomains: (any) => Promise<any>,
     refreshTrackersStats: (any) => Promise<any>,
-    refreshGeneralStats: () => Promise<any>
+    refreshGeneralStats: () => Promise<any>,
+    refreshTrackers: () => Promise<any>,
+    computeTrackers: () => void
   }
 }
 
 const ProfileStore: ProfileStoreData = {
   data: {
-    apiBase: "http://df.sdipi.ch:5000",
+    apiBase: "http://127.0.0.1:8080",
     visitedSites: [],
     visitedDomains: [],
     watchedSites: [],
@@ -237,6 +266,11 @@ const ProfileStore: ProfileStoreData = {
       selected: false,
       interest: undefined,
       formChanged: false
+    },
+    trackers: {},
+    trackersPage: {
+      mostSending: [],
+      mostRecieving: []
     },
     urlsTopic: {},
     loading: true,
@@ -582,6 +616,8 @@ const ProfileStore: ProfileStoreData = {
           let trackers2P = ProfileStore.methods.refreshMostRevealingDomains(dates);
           let trackers3P = ProfileStore.methods.refreshTrackersStats(dates);
 
+          let trackersP = ProfileStore.methods.refreshTrackers();
+
           let generalStatsP = ProfileStore.methods.refreshGeneralStats();
 
           Promise.all([visitedSitesP, watchedSitesP, userInterestsP, urlsTopicP, historyP, topicsP, iListP, tagsP]).then(() => {
@@ -597,7 +633,8 @@ const ProfileStore: ProfileStoreData = {
             ProfileStore.data.loading = false;
           });
 
-          Promise.all([trackers1P, trackers2P, trackers3P]).then(() => {
+          Promise.all([trackers1P, trackers2P, trackers3P, trackersP]).then(() => {
+            ProfileStore.methods.computeTrackers();
             ProfileStore.data.loadingTrackers = false;
           });
 
@@ -676,6 +713,77 @@ const ProfileStore: ProfileStoreData = {
         .then((data) => {
           ProfileStore.data.api.getMostRevealingDomains = data;
         });
+    },
+
+    refreshTrackers() {
+      let apiUrl = ProfileStore.data.apiBase + "/api/getTrackers";
+      /*if (dates) {
+        apiUrl += "?from=" + ProfileStore.data.filterForm.startDate + "&to=" + ProfileStore.data.filterForm.endDate
+      }*/
+      return fetch(apiUrl, {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          ProfileStore.data.api.getTrackers = data;
+        });
+    },
+
+    computeTrackers() {
+      console.log("START COMPUTE");
+      if (!ProfileStore.data.api.getTrackers) return;
+      for (let flux of ProfileStore.data.api.getTrackers) {
+        let from = flux.urlDomain;
+        let to = flux.reqDomain;
+        if (!(from in ProfileStore.data.trackers)) {
+          ProfileStore.data.trackers[from] = {};
+        }
+        ProfileStore.data.trackers[from][to] = {
+          amount: flux.amount,
+          size: flux.size
+        }
+      }
+      if (!ProfileStore.data.trackers) return;
+      const mostRecieving: {[to: string]: {amount: number, size: number}} = {};
+      for (let from in ProfileStore.data.trackers) {
+        let fromAmount = 0;
+        let fromSize = 0;
+        for (let to in ProfileStore.data.trackers[from]) {
+          let toAmount = ProfileStore.data.trackers[from][to].amount;
+          let toSize = ProfileStore.data.trackers[from][to].size;
+          fromAmount += toAmount;
+          fromSize += toSize;
+
+          if (!(to in mostRecieving)) {
+            mostRecieving[to] = {
+              amount: 0,
+              size: 0
+            };
+          }
+          mostRecieving[to].amount += toAmount;
+          mostRecieving[to].size += toSize;
+        }
+        ProfileStore.data.trackersPage.mostSending.push({
+          from: from,
+          amount: fromAmount,
+          size: fromSize
+        });
+      }
+
+      for (let to in mostRecieving) {
+        ProfileStore.data.trackersPage.mostRecieving.push({
+          to: to,
+          amount: mostRecieving[to].amount,
+          size: mostRecieving[to].size
+        });
+      }
+
+      ProfileStore.data.trackersPage.mostSending.sort((a, b) => {
+        return (b['amount'] - a['amount'])
+      });
+      ProfileStore.data.trackersPage.mostRecieving.sort((a, b) => {
+        return (b['amount'] - a['amount'])
+      });
+      ProfileStore.data.trackersPage.mostSending = ProfileStore.data.trackersPage.mostSending.splice(0,100);
+      ProfileStore.data.trackersPage.mostRecieving = ProfileStore.data.trackersPage.mostRecieving.splice(0,100);
     },
 
     refreshTrackersStats(dates: boolean) {
