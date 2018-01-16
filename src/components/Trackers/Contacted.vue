@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2 class="mb-0">Most contacted trackers</h2>
-    <BarList :list="ProfileStore.api.getMostPresentTrackers" :labels="['Domain', 'Requests']" :keyLabel="'requestDomain'" :keyValue="'count'" :valueF1="(function(e) {return e.slice(0, 3).map((e) => {return e.word}).join(' ')})"></BarList>
+    <BarExtendedList :list="ProfileStore.trackersPage.mostRecieving" :labels="['Domain', 'Data', 'Requests']" :keyLabel="'to'" :keyValue1="'size'" :keyValue2="'amount'" :valueF1="(function(e) {return Math.floor(e/8/1024) + ' kB';})"></BarExtendedList>
   </div>
 </template>
 

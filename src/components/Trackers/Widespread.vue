@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2 class="mb-0">Most revealing domains</h2>
-    <BarList :list="ProfileStore.api.getMostRevealingDomains" :labels="['Domain', 'Requests']" :keyLabel="'urlDomain'" :keyValue="'count'" :valueF1="(function(e) {return e.slice(0, 3).map((e) => {return e.word}).join(' ')})"></BarList>
+    <BarExtendedList :list="ProfileStore.trackersPage.mostSending" :labels="['Domain', 'Data', 'Requests']" :keyLabel="'from'" :keyValue1="'size'" :keyValue2="'amount'" :valueF1="(function(e) {return Math.floor(e/8/1024) + ' kB';})"></BarExtendedList>
   </div>
 </template>
 
