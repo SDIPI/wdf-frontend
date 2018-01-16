@@ -612,8 +612,8 @@ const ProfileStore: ProfileStoreData = {
 
           let tagsP = ProfileStore.methods.refreshTags();
 
-          let trackers1P = ProfileStore.methods.refreshMostPresentTrackers(dates);
-          let trackers2P = ProfileStore.methods.refreshMostRevealingDomains(dates);
+          /*let trackers1P = ProfileStore.methods.refreshMostPresentTrackers(dates);
+          let trackers2P = ProfileStore.methods.refreshMostRevealingDomains(dates);*/
           let trackers3P = ProfileStore.methods.refreshTrackersStats(dates);
 
           let trackersP = ProfileStore.methods.refreshTrackers();
@@ -633,7 +633,7 @@ const ProfileStore: ProfileStoreData = {
             ProfileStore.data.loading = false;
           });
 
-          Promise.all([trackers1P, trackers2P, trackers3P, trackersP]).then(() => {
+          Promise.all([trackers3P, trackersP]).then(() => {
             ProfileStore.methods.computeTrackers();
             ProfileStore.data.loadingTrackers = false;
           });
