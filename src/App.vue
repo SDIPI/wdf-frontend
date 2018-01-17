@@ -35,7 +35,7 @@
       </div>
     </nav>
 
-    <div class="container">
+    <div class="container main">
       <router-view v-if="ProfileStore.connected"/>
       <div v-if="ProfileStore.connected === null">Connecting...</div>
       <div v-if="ProfileStore.connected == false">You're not connected.</div>
@@ -98,5 +98,9 @@
 
   :hover > .hint {
     opacity: 1;
+  }
+
+  .container.main {
+    margin-top: 4px;
   }
 </style>
