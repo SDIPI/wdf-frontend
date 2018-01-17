@@ -12,17 +12,22 @@
     <tbody>
     <tr v-for="(element, index) in list">
       <th scope="row">{{ index+1 }}</th>
-      <td class="first"><button type='button' class='btn btn-primary' data-toggle='modal' data-target='#exampleModal' v-on:click="cbButton(element[keyLabel])">{{element[keyLabel]}}</button></td>
+      <td class="first">
+        <button type='button' class='btn btn-primary' data-toggle='modal' data-target='#exampleModal'
+                :disabled="activeList[element[keyLabel]] === false"
+                :class="{clickable: activeList[element[keyLabel]] === true}"
+                v-on:click="cbButton(element[keyLabel])">{{element[keyLabel]}}</button>
+      </td>
       <td class="hint">
         <button
-          v-on:click="hiddenList = hiddenList.filter(item => item !== element[keyLabel])"
-          v-if="element[keyLabel] in hiddenList" type="button" class="btn btn-sm btn-outline-success smallButton"><i class="material-icons">visibility</i></button>
+          v-on:click="clickHide(element[keyLabel])"
+          v-if="activeList[element[keyLabel]] === true" type="button" class="btn btn-sm btn-outline-success smallButton"><i class="material-icons">visibility</i></button>
         <button
-          v-on:click="hiddenList.push(element[keyLabel])"
-          v-else type="button" class="btn btn-sm btn-outline-danger smallButton"><i class="material-icons">visibility_off</i></button>
+          v-on:click="clickShow(element[keyLabel])"
+          v-if="activeList[element[keyLabel]] === false" type="button" class="btn btn-sm btn-outline-danger smallButton"><i class="material-icons">visibility_off</i></button>
       </td>
-      <td class="middle"><var>{{ element[keyValue1] ? (valueF1 ? valueF1(element[keyValue1]) : element[keyValue1]) : '' }}</var></td>
-      <td class="middle toRight"><strong>{{ element[keyValue2] ? (valueF2 ? valueF2(element[keyValue2]) : element[keyValue2]) : '' }}</strong></td>
+      <td class="middle"><var>{{ element[keyValue1] ? (valueF1 ? valueF1(element[keyValue1]) : element[keyValue1]) : '-' }}</var></td>
+      <td class="middle toRight"><strong>{{ element[keyValue2] ? (valueF2 ? valueF2(element[keyValue2]) : element[keyValue2]) : 0 }}</strong></td>
       <td class="middle bar">
         <div class="progress">
           <div class="progress-bar" role="progressbar" :style="'width: ' + (element[keyValue2]*100/maxValue) + '%;'" :aria-valuenow="element[keyValue2]*100/maxValue" aria-valuemin="0" :aria-valuemax="maxValue"></div>
@@ -36,12 +41,26 @@
 <script>
   export default {
     name: 'BarExtendedListTrackers',
-    props: ['list', 'labels', 'keyLabel', 'keyValue1', 'keyValue2', 'valueF1', 'valueF2', 'cbButton', 'hiddenList'],
+    props: ['list', 'labels', 'keyLabel', 'keyValue1', 'keyValue2', 'valueF1', 'valueF2', 'cbButton', 'activeList', 'fixedMax'],
     computed: {
       maxValue() {
-        return this.list[0][this.keyValue2]
+        return this.fixedMax ? this.fixedMax : this.list[0][this.keyValue2];
       }
     },
+    methods: {
+      clickHide(e) {
+        this.activeList[e] = false;
+        ProfileStore.methods.computeTrackers();
+        this.list.splice(); // To force re-rendering the list
+        ProfileStore.trackersForm.modalList.splice(); // To force re-rendering the modal
+      },
+      clickShow(e) {
+        this.activeList[e] = true;
+        ProfileStore.methods.computeTrackers();
+        this.list.splice(); // To force re-rendering the list
+        ProfileStore.trackersForm.modalList.splice(); // To force re-rendering the modal
+      }
+    }
   }
 </script>
 
@@ -66,7 +85,7 @@ td.toRight {
   width: 30%;
 }
 
-button {
+.clickable {
   cursor: pointer;
 }
 

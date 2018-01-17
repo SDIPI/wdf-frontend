@@ -20,6 +20,22 @@ export default Vue.extend({
       Utils: Utils
     };
   },
+  computed: {
+    nbHiddenSending() {
+      let total = 0;
+      for (let domain in ProfileStore.data.trackersForm.active.from) {
+        if (ProfileStore.data.trackersForm.active.from[domain] === true) total++;
+      }
+      return total;
+    },
+    nbHiddenRecieving() {
+      let total = 0;
+      for (let domain in ProfileStore.data.trackersForm.active.to) {
+        if (ProfileStore.data.trackersForm.active.to[domain] === true) total++;
+      }
+      return total;
+    }
+  },
   methods: {
     refreshProfileStoreWithDates() {
       ProfileStore.methods.refreshEverything(true);

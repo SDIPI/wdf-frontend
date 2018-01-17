@@ -7,7 +7,7 @@ function parseUrl(url, part) {
 function day(dateString) {
   let date = new Date(dateString);
   let dd: string|number = date.getDate();
-  let mm: string|number = date.getMonth()+1; //January is 0!
+  let mm: string|number = date.getMonth()+1; // January is 0!
   let yyyy = date.getFullYear();
   if(dd<10){
     dd='0'+dd
@@ -91,15 +91,17 @@ interface ProfileStoreData {
     trackersForm: {
       selectedDomain?: string,
       fromOrTo?: string,
-      ignored?: {
-        to?: string[],
-        from?: string[]
+      active: {
+        to: {[domain: string]: boolean},
+        from: {[domain: string]: boolean}
       },
-      modalList?: {
+      modalList: {
         label: string,
         amount: number,
         size: number
-      }[]
+      }[],
+      nbHiddenSending: number
+      nbHiddenRecieving: number
     }
     graph: {
       selected: false | string,
@@ -118,12 +120,14 @@ interface ProfileStoreData {
       mostSending: {
         from: string,
         amount: number,
-        size: number
+        size: number,
+        realAmount: number
       }[],
       mostRecieving: {
         to: string,
         amount: number,
-        size: number
+        size: number,
+        realAmount: number
       }[]
     }
     urlsTopic: {},
@@ -238,8 +242,6 @@ interface ProfileStoreData {
     sendInterests: (any) => Promise<any>,
     sendTag: (number, string) => Promise<any>,
     refreshTags: () => Promise<any>,
-    refreshMostPresentTrackers: (any) => Promise<any>,
-    refreshMostRevealingDomains: (any) => Promise<any>,
     refreshTrackersStats: (any) => Promise<any>,
     refreshGeneralStats: () => Promise<any>,
     refreshTrackers: () => Promise<any>,
@@ -278,10 +280,13 @@ const ProfileStore: ProfileStoreData = {
     trackersForm: {
       selectedDomain: '',
       fromOrTo: '',
-      ignored: {
-        to: [],
-        from: []
-      }
+      active: {
+        to: {},
+        from: {}
+      },
+      modalList: [],
+      nbHiddenSending: 0,
+      nbHiddenRecieving: 0
     },
     graph: {
       selected: false,
@@ -712,30 +717,6 @@ const ProfileStore: ProfileStoreData = {
     },
 
     // TRACKERS
-    refreshMostPresentTrackers(dates: boolean) {
-      let apiUrl = ProfileStore.data.apiBase + "/api/getMostPresentTrackers";
-      if (dates) {
-        apiUrl += "?from=" + ProfileStore.data.filterForm.startDate + "&to=" + ProfileStore.data.filterForm.endDate
-      }
-      return fetch(apiUrl, {credentials: 'include'})
-        .then(response => response.json())
-        .then((data) => {
-          ProfileStore.data.api.getMostPresentTrackers = data;
-        });
-    },
-
-    refreshMostRevealingDomains(dates: boolean) {
-      let apiUrl = ProfileStore.data.apiBase + "/api/getMostRevealingDomains";
-      if (dates) {
-        apiUrl += "?from=" + ProfileStore.data.filterForm.startDate + "&to=" + ProfileStore.data.filterForm.endDate
-      }
-      return fetch(apiUrl, {credentials: 'include'})
-        .then(response => response.json())
-        .then((data) => {
-          ProfileStore.data.api.getMostRevealingDomains = data;
-        });
-    },
-
     refreshTrackers() {
       let apiUrl = ProfileStore.data.apiBase + "/api/getTrackers";
       /*if (dates) {
@@ -750,6 +731,10 @@ const ProfileStore: ProfileStoreData = {
 
     computeTrackers() {
       console.log("START COMPUTE");
+      ProfileStore.data.trackers = {};
+      ProfileStore.data.trackersPage.mostRecieving = [];
+      ProfileStore.data.trackersPage.mostSending = [];
+
       if (!ProfileStore.data.api.getTrackers) return;
       for (let flux of ProfileStore.data.api.getTrackers) {
         let from = flux.urlDomain;
@@ -763,29 +748,48 @@ const ProfileStore: ProfileStoreData = {
         }
       }
       if (!ProfileStore.data.trackers) return;
-      const mostRecieving: {[to: string]: {amount: number, size: number}} = {};
+
+      const mostRecieving: {[to: string]: {amount: number, size: number, realAmount: number}} = {};
+
       for (let from in ProfileStore.data.trackers) {
+        if (!(from in ProfileStore.data.trackersForm.active.from)) {
+          ProfileStore.data.trackersForm.active.from[from] = true;
+        }
         let fromAmount = 0;
         let fromSize = 0;
+        let fromRealAmount = 0;
         for (let to in ProfileStore.data.trackers[from]) {
-          let toAmount = ProfileStore.data.trackers[from][to].amount;
-          let toSize = ProfileStore.data.trackers[from][to].size;
-          fromAmount += toAmount;
-          fromSize += toSize;
+          if (!(to in ProfileStore.data.trackersForm.active.to)) {
+            ProfileStore.data.trackersForm.active.to[to] = true;
+          }
+          let toAmount = 0;
+          let toSize = 0;
+          let toRealAmount = ProfileStore.data.trackers[from][to].amount;
+
+          if (ProfileStore.data.trackersForm.active.from[from] && ProfileStore.data.trackersForm.active.to[to]) {
+            toAmount += ProfileStore.data.trackers[from][to].amount;
+            toSize += ProfileStore.data.trackers[from][to].size;
+            fromAmount += ProfileStore.data.trackers[from][to].amount;
+            fromSize += ProfileStore.data.trackers[from][to].size;
+          }
+          fromRealAmount += toRealAmount;
 
           if (!(to in mostRecieving)) {
             mostRecieving[to] = {
               amount: 0,
-              size: 0
+              size: 0,
+              realAmount: 0
             };
           }
           mostRecieving[to].amount += toAmount;
           mostRecieving[to].size += toSize;
+          mostRecieving[to].realAmount += toRealAmount;
         }
         ProfileStore.data.trackersPage.mostSending.push({
           from: from,
           amount: fromAmount,
-          size: fromSize
+          size: fromSize,
+          realAmount: fromRealAmount
         });
       }
 
@@ -793,15 +797,16 @@ const ProfileStore: ProfileStoreData = {
         ProfileStore.data.trackersPage.mostRecieving.push({
           to: to,
           amount: mostRecieving[to].amount,
-          size: mostRecieving[to].size
+          size: mostRecieving[to].size,
+          realAmount: mostRecieving[to].realAmount
         });
       }
 
       ProfileStore.data.trackersPage.mostSending.sort((a, b) => {
-        return (b['amount'] - a['amount'])
+        return (b['realAmount'] - a['realAmount'])
       });
       ProfileStore.data.trackersPage.mostRecieving.sort((a, b) => {
-        return (b['amount'] - a['amount'])
+        return (b['realAmount'] - a['realAmount'])
       });
       ProfileStore.data.trackersPage.mostSending = ProfileStore.data.trackersPage.mostSending.splice(0,100);
       ProfileStore.data.trackersPage.mostRecieving = ProfileStore.data.trackersPage.mostRecieving.splice(0,100);
@@ -829,8 +834,6 @@ const ProfileStore: ProfileStoreData = {
     },
   }
 };
-
-//setInterval(() => {console.log(ProfileStore.data.settingsForm.interests);}, 4000);
 
 window['ProfileStore'] = ProfileStore;
 

@@ -11,7 +11,7 @@
     <tbody>
     <tr v-for="(element, index) in list">
       <th scope="row">{{ index+1 }}</th>
-      <td class="first"><a :href="element[keyLabel]" target="_blank">{{ element[keyLabel] }}</a></td>
+      <td class="first"><a v-if="linkLabels" :href="(linkPrefix ? linkPrefix : '') + element[keyLabel]" target="_blank">{{ element[keyLabel] }}</a><span v-else>{{ element[keyLabel] }}</span></td>
       <td class="middle"><var>{{ element[keyValue1] ? (valueF1 ? valueF1(element[keyValue1]) : element[keyValue1]) : '' }}</var></td>
       <td class="middle toRight"><strong>{{ element[keyValue2] ? (valueF2 ? valueF2(element[keyValue2]) : element[keyValue2]) : '' }}</strong></td>
       <td class="middle bar">
@@ -27,7 +27,7 @@
 <script>
   export default {
     name: 'BarExtendedList',
-    props: ['list', 'labels', 'keyLabel', 'keyValue1', 'keyValue2', 'valueF1', 'valueF2'],
+    props: ['list', 'labels', 'keyLabel', 'keyValue1', 'keyValue2', 'valueF1', 'valueF2', 'linkLabels', 'linkPrefix'],
     computed: {
       maxValue() {
         console.log(this.list);

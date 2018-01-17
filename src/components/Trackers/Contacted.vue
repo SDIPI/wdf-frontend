@@ -13,15 +13,19 @@
         ProfileStore.trackersForm.selectedDomain = e;
         for (let from in ProfileStore.trackers) {
           if (e in ProfileStore.trackers[from]) {
-            let tracker = ProfileStore.trackers[from][e];
-            ProfileStore.trackersForm.modalList.push({label: from, amount: tracker.amount, size: tracker.size});
+            if (ProfileStore.trackersForm.active.from[from]) {
+              let tracker = ProfileStore.trackers[from][e];
+              ProfileStore.trackersForm.modalList.push({label: from, amount: tracker.amount, size: tracker.size});
+            }
           }
         }
         ProfileStore.trackersForm.modalList.sort((a, b) => {
           return (b['amount'] - a['amount'])
         }).slice(0, 100);
+        ProfileStore.trackersForm.modalList.splice();
       })"
-      :hiddenList="ProfileStore.trackersForm.ignored.to"
+      :activeList="ProfileStore.trackersForm.active.to"
+      :fixedMax="ProfileStore.trackersPage.mostRecieving[0].realAmount"
     ></BarExtendedListTrackers>
 
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
