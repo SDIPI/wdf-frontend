@@ -830,7 +830,7 @@ const ProfileStore: ProfileStoreData = {
   }
 };
 
-setInterval(() => {console.log(ProfileStore.data.settingsForm.interests);}, 4000);
+//setInterval(() => {console.log(ProfileStore.data.settingsForm.interests);}, 4000);
 
 window['ProfileStore'] = ProfileStore;
 

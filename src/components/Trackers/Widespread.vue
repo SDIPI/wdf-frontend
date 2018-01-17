@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h2 class="mb-0">Most revealing domains</h2>
-    <BarExtendedListCb
+    <h2 class="mb-0">Most requesting domains</h2>
+    <BarExtendedListTrackers
       :list="ProfileStore.trackersPage.mostSending"
-      :labels="['Domain', 'Data', 'Requests']"
+      :labels="['Domain', 'Sent', 'Requests']"
       :keyLabel="'from'"
       :keyValue1="'size'"
       :keyValue2="'amount'"
@@ -19,7 +19,8 @@
           return (b['amount'] - a['amount'])
         }).slice(0, 100);
       })"
-    ></BarExtendedListCb>
+      :hiddenList="ProfileStore.trackersForm.ignored.from"
+    ></BarExtendedListTrackers>
 
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -55,7 +56,7 @@
 <script>
   import ProfileStore from "../../stores/ProfileStore";
   import BarList from "../BarList.vue";
-  import BarExtendedListCb from "../BarExtendedListCb.vue";
+  import BarExtendedListTrackers from "../BarExtendedListTrackers.vue";
   import BarExtendedList from "../BarExtendedList.vue";
   import TableList from "../TableList.vue";
 
@@ -64,7 +65,7 @@
     components: {
       TableList,
       BarList,
-      BarExtendedListCb,
+      BarExtendedListTrackers,
       BarExtendedList
     },
     data() {
