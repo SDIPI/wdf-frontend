@@ -7,10 +7,16 @@
       <div class="col contains-tabs">
         <ul class="nav nav-tabs nav-fill blue">
           <li class="nav-item">
-            <router-link class="nav-link" to="/trackers/widespread" v-on:click="ProfileStore.trackersForm.modalList.splice()">Most sending</router-link>
+            <router-link class="nav-link" to="/trackers/widespread" v-on:click="ProfileStore.trackersForm.modalList.splice()">
+              Most sending
+              <span v-if="ProfileStore.trackersForm.nbHiddenSending > 0" class="badge badge-warning">{{ProfileStore.trackersForm.nbHiddenSending}} hidden</span>
+            </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/trackers/contacted" v-on:click="ProfileStore.trackersForm.modalList.splice()">Most recieving</router-link>
+            <router-link class="nav-link" to="/trackers/contacted" v-on:click="ProfileStore.trackersForm.modalList.splice()">
+              Most recieving
+              <span v-if="ProfileStore.trackersForm.nbHiddenRecieving > 0" class="badge badge-warning">{{ProfileStore.trackersForm.nbHiddenRecieving}} hidden</span>
+            </router-link>
           </li>
           <li class="nav-item">
             <router-link class="nav-link" to="/trackers/stats">Stats</router-link>

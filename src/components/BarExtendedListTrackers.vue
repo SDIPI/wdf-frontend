@@ -39,6 +39,8 @@
 </template>
 
 <script>
+  import ProfileStore from "../stores/ProfileStore";
+
   export default {
     name: 'BarExtendedListTrackers',
     props: ['list', 'labels', 'keyLabel', 'keyValue1', 'keyValue2', 'valueF1', 'valueF2', 'cbButton', 'activeList', 'fixedMax'],
@@ -52,13 +54,13 @@
         this.activeList[e] = false;
         ProfileStore.methods.computeTrackers();
         this.list.splice(); // To force re-rendering the list
-        ProfileStore.trackersForm.modalList.splice(); // To force re-rendering the modal
+        ProfileStore.methods.trackersForm.refreshNbHidden();
       },
       clickShow(e) {
         this.activeList[e] = true;
         ProfileStore.methods.computeTrackers();
         this.list.splice(); // To force re-rendering the list
-        ProfileStore.trackersForm.modalList.splice(); // To force re-rendering the modal
+        ProfileStore.methods.trackersForm.refreshNbHidden();
       }
     }
   }

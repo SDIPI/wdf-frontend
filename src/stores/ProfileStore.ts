@@ -245,7 +245,10 @@ interface ProfileStoreData {
     refreshTrackersStats: (any) => Promise<any>,
     refreshGeneralStats: () => Promise<any>,
     refreshTrackers: () => Promise<any>,
-    computeTrackers: () => void
+    computeTrackers: () => void,
+    trackersForm: {
+      refreshNbHidden: () => void
+    }
   }
 }
 
@@ -832,6 +835,23 @@ const ProfileStore: ProfileStoreData = {
           ProfileStore.data.api.getGeneralStats = data;
         });
     },
+
+    trackersForm: {
+      refreshNbHidden() {
+        ProfileStore.data.trackersForm.nbHiddenRecieving = 0;
+        ProfileStore.data.trackersForm.nbHiddenSending = 0;
+        for (let domain in ProfileStore.data.trackersForm.active.to) {
+          if (ProfileStore.data.trackersForm.active.to[domain] === false) {
+            ProfileStore.data.trackersForm.nbHiddenRecieving++;
+          }
+        }
+        for (let domain in ProfileStore.data.trackersForm.active.from) {
+          if (ProfileStore.data.trackersForm.active.from[domain] === false) {
+            ProfileStore.data.trackersForm.nbHiddenSending++;
+          }
+        }
+      }
+    }
   }
 };
 
