@@ -88,6 +88,19 @@ interface ProfileStoreData {
     settingsForm: {
       interests?: any
     },
+    trackersForm: {
+      selectedDomain?: string,
+      fromOrTo?: string,
+      ignored?: {
+        to?: string[],
+        from?: string[]
+      },
+      modalList?: {
+        label: string,
+        amount: number,
+        size: number
+      }[]
+    }
     graph: {
       selected: false | string,
       interest?: false | number,
@@ -236,7 +249,7 @@ interface ProfileStoreData {
 
 const ProfileStore: ProfileStoreData = {
   data: {
-    apiBase: "http://127.0.0.1:8080",
+    apiBase: "http://df.sdipi.ch:5000",
     visitedSites: [],
     visitedDomains: [],
     watchedSites: [],
@@ -261,6 +274,14 @@ const ProfileStore: ProfileStoreData = {
     },
     settingsForm: {
       interests: null
+    },
+    trackersForm: {
+      selectedDomain: '',
+      fromOrTo: '',
+      ignored: {
+        to: [],
+        from: []
+      }
     },
     graph: {
       selected: false,

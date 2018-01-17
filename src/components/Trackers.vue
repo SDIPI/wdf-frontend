@@ -20,6 +20,7 @@
           </li>-->
         </ul>
       </div>
+      <!--
       <div class="col-md-auto after-tabs">
         <div class="btn-group">
           <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -37,7 +38,7 @@
             <button type="submit" class="btn btn-primary" v-on:click="refreshProfileStoreWithDates(true)" :disabled="ProfileStore.loading">Apply</button>
           </form>
         </div>
-      </div>
+      </div>-->
     </div>
 
     <router-view v-if="!ProfileStore.loadingTrackers" class="router-view"></router-view>
