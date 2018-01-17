@@ -30,7 +30,11 @@ export default new Router({
       component: Trackers,
       children: [
         {
-          path: 'contacted',
+          path: '',
+          redirect: 'send'
+        },
+        {
+          path: 'receive',
           name: 'Contacted',
           component: Contacted
         },
@@ -45,7 +49,7 @@ export default new Router({
           component: TrackerStats
         },
         {
-          path: 'widespread',
+          path: 'send',
           name: 'Widespread',
           component: Widespread
         }
