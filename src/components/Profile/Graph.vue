@@ -7,7 +7,7 @@
       </div>
       <div class="col-3" v-if="ProfileStore.graph.selected">
         <h3 class="mb-0">Selected</h3>
-        Word <b>{{ProfileStore.graph.selected}}</b><br/>
+        Topic <b>{{ProfileStore.graph.selected}}</b><br/>
         Related interest : <select ref="interestField" v-on:change="selectChanged()">
           <option value="-1"></option>
           <option v-for="el in ProfileStore.interestsList" v-if="ProfileStore.settingsForm.interests.indexOf(el.id) > -1" :value="el.id">{{el.label}}</option>
@@ -85,12 +85,23 @@
       let connections = [];
       let interests = ProfileStore.data.topics;
 
+      console.log("?????");
+
       for (let topicId in interests['topics']) {
         let topic = interests['topics'][topicId];
-        topics.push({id: "t" + topicId, label: topic[0][0], color: 'red', 'font':{color:'white'}});
-        keywordsDict["t" + topicId] = topic[0][0];
+        topics.push({
+          id: "t" + topicId,
+          label: '<b>' + topic[0][0] + '</b>\n' + topic[1][0] + '\n' + topic[2][0],
+          color: 'red',
+          font: {
+            multi: 'html',
+            color: 'white'
+          }
+        });
+        keywordsDict["t" + topicId] = topic[0][0] + ' ' + topic[1][0] + ' ' + topic[2][0];
       }
 
+      /*
       for (let wordId in interests['keywords']) {
         let word = interests['keywords'][wordId];
         keywords.push({id: "w" + wordId, label: word['word'], color: '#007bff', 'font':{color:'white'}});
@@ -98,14 +109,14 @@
         for (let link in word['topics']) {
           connections.push({from: "w" +  wordId, to: "t" + word['topics'][link][0]});
         }
-      }
+      }*/
 
       console.log(topics);
       console.log(keywords);
 
       this.$data.keywordsDict = keywordsDict;
 
-      var nodes = new vis.DataSet(topics.concat(keywords));
+      var nodes = new vis.DataSet(topics);
 
       // create an array with edges
       var edges = new vis.DataSet(connections);
@@ -113,8 +124,7 @@
       // create a network
       var container = this.$refs.mynetwork;
       var data = {
-        nodes: nodes,
-        edges: edges
+        nodes: nodes
       };
       var options = {};
       var network = new vis.Network(container, data, options);
