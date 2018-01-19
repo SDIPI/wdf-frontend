@@ -21,30 +21,16 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/trackers/stats">Stats</router-link>
           </li>
-          <!--<li class="nav-item">
-            <router-link class="nav-link" to="/trackers/flow">Information flux</router-link>
-          </li>-->
         </ul>
       </div>
-      <!--
+
       <div class="col-md-auto after-tabs">
         <div class="btn-group">
-          <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Date filter
+          <button type="button" class="btn btn-secondary" v-on:click="exportJson()">
+            Export data
           </button>
-          <form class="dropdown-menu p-4 dropdown-menu-right" v-on:submit.prevent>
-            <div class="form-group">
-              <label for="startDate">From</label>
-              <input type="date" v-model="ProfileStore.filterForm.startDate" :min="ProfileStore.oldest" :max="Utils.today()" class="form-control" placeholder="Start date" id="startDate">
-            </div>
-            <div class="form-group">
-              <label for="endDate">To</label>
-              <input type="date" v-model="ProfileStore.filterForm.endDate" :min="ProfileStore.oldest" :max="Utils.today()" class="form-control" placeholder="End date" id="endDate">
-            </div>
-            <button type="submit" class="btn btn-primary" v-on:click="refreshProfileStoreWithDates(true)" :disabled="ProfileStore.loading">Apply</button>
-          </form>
         </div>
-      </div>-->
+      </div>
     </div>
 
     <router-view v-if="!ProfileStore.loadingTrackers" class="router-view"></router-view>

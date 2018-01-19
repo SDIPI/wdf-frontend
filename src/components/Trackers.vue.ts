@@ -23,6 +23,16 @@ export default Vue.extend({
   methods: {
     refreshProfileStoreWithDates() {
       ProfileStore.methods.refreshEverything(true);
+    },
+    exportJson() {
+      let a = window.document.createElement('a');
+      a.href = window.URL.createObjectURL(new Blob([ProfileStore.data.trackers], {type: 'text/json'}));
+      a.download = 'trackers.json';
+
+      // Append anchor to body.
+      document.body.appendChild(a);
+      a.click();
+
     }
   },
   mounted() {
