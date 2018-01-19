@@ -3,10 +3,11 @@
     <h2 class="mb-0">Most contacted domains</h2>
     <BarExtendedListTrackers
       :list="ProfileStore.trackersPage.mostRecieving"
-      :labels="['Domain', 'Recieved', 'Requests']"
+      :labels="['Domain', 'Recieved', 'Requests', 'Domains']"
       :keyLabel="'to'"
       :keyValue1="'size'"
       :keyValue2="'amount'"
+      :keyValue3="'domains'"
       :valueF1="(function(e) {return Math.floor(e/8/1024) + ' kB';})"
       :cbButton="(function(e) {
         ProfileStore.trackersForm.modalList = [];
@@ -40,7 +41,7 @@
           <div class="modal-body">
             <BarExtendedList
               :list="ProfileStore.trackersForm.modalList"
-              :labels="['Domain', 'Data', 'Requests']"
+              :labels="['Domain', 'Data', 'Requests', 'Domains']"
               :keyLabel="'label'"
               :keyValue1="'size'"
               :keyValue2="'amount'"

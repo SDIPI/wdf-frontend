@@ -121,13 +121,15 @@ interface ProfileStoreData {
         from: string,
         amount: number,
         size: number,
-        realAmount: number
+        realAmount: number,
+        domains: number
       }[],
       mostRecieving: {
         to: string,
         amount: number,
         size: number,
-        realAmount: number
+        realAmount: number,
+        domains: number
       }[]
     }
     urlsTopic: {},
@@ -752,7 +754,7 @@ const ProfileStore: ProfileStoreData = {
       }
       if (!ProfileStore.data.trackers) return;
 
-      const mostRecieving: {[to: string]: {amount: number, size: number, realAmount: number}} = {};
+      const mostRecieving: {[to: string]: {amount: number, size: number, realAmount: number, domains: number}} = {};
 
       for (let from in ProfileStore.data.trackers) {
         if (!(from in ProfileStore.data.trackersForm.active.from)) {
@@ -761,17 +763,21 @@ const ProfileStore: ProfileStoreData = {
         let fromAmount = 0;
         let fromSize = 0;
         let fromRealAmount = 0;
+        let fromDomains = 0;
         for (let to in ProfileStore.data.trackers[from]) {
           if (!(to in ProfileStore.data.trackersForm.active.to)) {
             ProfileStore.data.trackersForm.active.to[to] = true;
           }
           let toAmount = 0;
           let toSize = 0;
+          let toDomains = 0;
           let toRealAmount = ProfileStore.data.trackers[from][to].amount;
 
           if (ProfileStore.data.trackersForm.active.from[from] && ProfileStore.data.trackersForm.active.to[to]) {
+            toDomains++;
             toAmount += ProfileStore.data.trackers[from][to].amount;
             toSize += ProfileStore.data.trackers[from][to].size;
+            fromDomains++;
             fromAmount += ProfileStore.data.trackers[from][to].amount;
             fromSize += ProfileStore.data.trackers[from][to].size;
           }
@@ -781,18 +787,21 @@ const ProfileStore: ProfileStoreData = {
             mostRecieving[to] = {
               amount: 0,
               size: 0,
-              realAmount: 0
+              realAmount: 0,
+              domains: 0
             };
           }
           mostRecieving[to].amount += toAmount;
           mostRecieving[to].size += toSize;
           mostRecieving[to].realAmount += toRealAmount;
+          mostRecieving[to].domains += toDomains;
         }
         ProfileStore.data.trackersPage.mostSending.push({
           from: from,
           amount: fromAmount,
           size: fromSize,
-          realAmount: fromRealAmount
+          realAmount: fromRealAmount,
+          domains: fromDomains
         });
       }
 
@@ -801,7 +810,8 @@ const ProfileStore: ProfileStoreData = {
           to: to,
           amount: mostRecieving[to].amount,
           size: mostRecieving[to].size,
-          realAmount: mostRecieving[to].realAmount
+          realAmount: mostRecieving[to].realAmount,
+          domains: mostRecieving[to].domains
         });
       }
 

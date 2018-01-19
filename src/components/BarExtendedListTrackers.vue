@@ -6,6 +6,7 @@
       <th>{{ labels[0] }}</th>
       <th>Visible</th>
       <th>{{ labels[1] }}</th>
+      <th>{{ labels[3] }}</th>
       <th colspan="2">{{ labels[2] }}</th>
     </tr>
     </thead>
@@ -27,6 +28,7 @@
           v-if="activeList[element[keyLabel]] === false" type="button" class="btn btn-sm btn-outline-danger smallButton"><i class="material-icons">visibility_off</i></button>
       </td>
       <td class="middle"><var>{{ element[keyValue1] ? (valueF1 ? valueF1(element[keyValue1]) : element[keyValue1]) : '-' }}</var></td>
+      <td class="middle"><strong>{{ element[keyValue3] ? element[keyValue3] : 0 }}</strong></td>
       <td class="middle toRight"><strong>{{ element[keyValue2] ? (valueF2 ? valueF2(element[keyValue2]) : element[keyValue2]) : 0 }}</strong></td>
       <td class="middle bar">
         <div class="progress">
@@ -43,7 +45,7 @@
 
   export default {
     name: 'BarExtendedListTrackers',
-    props: ['list', 'labels', 'keyLabel', 'keyValue1', 'keyValue2', 'valueF1', 'valueF2', 'cbButton', 'activeList', 'fixedMax'],
+    props: ['list', 'labels', 'keyLabel', 'keyValue1', 'keyValue2', 'valueF1', 'valueF2', 'cbButton', 'activeList', 'fixedMax', 'keyValue3'],
     computed: {
       maxValue() {
         return this.fixedMax ? this.fixedMax : this.list[0][this.keyValue2];

@@ -3,10 +3,11 @@
     <h2 class="mb-0">Most requesting domains</h2>
     <BarExtendedListTrackers
       :list="ProfileStore.trackersPage.mostSending"
-      :labels="['Domain', 'Sent', 'Requests']"
+      :labels="['Domain', 'Sent', 'Requests', 'Domains']"
       :keyLabel="'from'"
       :keyValue1="'size'"
       :keyValue2="'amount'"
+      :keyValue3="'domains'"
       :valueF1="(function(e) {return Math.floor(e/8/1024) + ' kB';})"
       :cbButton="(function(e) {
         ProfileStore.trackersForm.modalList = [];
