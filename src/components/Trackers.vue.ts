@@ -26,7 +26,7 @@ export default Vue.extend({
     },
     exportJson() {
       let a = window.document.createElement('a');
-      a.href = window.URL.createObjectURL(new Blob([ProfileStore.data.trackers], {type: 'text/json'}));
+      a.href = window.URL.createObjectURL(new Blob([JSON.stringify(ProfileStore.data.trackers)], {type: 'text/json'}));
       a.download = 'trackers.json';
 
       // Append anchor to body.
