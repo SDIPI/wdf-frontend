@@ -395,6 +395,7 @@ const ProfileStore: ProfileStoreData = {
         }).slice(0, 10);
         ProfileStore.data.watchedSites = sortedUrls;
         ProfileStore.data.watchedDomains = sortedDomains;
+        ProfileStore.data.topicsWatched = {};
         for (let site of data) {
           let siteTopics: {[topicId: number]: number} = JSON.parse(site.topics);
           for (let topicStr in siteTopics) {
@@ -409,6 +410,7 @@ const ProfileStore: ProfileStoreData = {
     },
 
     computeWatchedTopics() {
+      ProfileStore.data.topicsPage.topics = [];
       for (let topicWatched in ProfileStore.data.topicsWatched) {
         let topicValue = ProfileStore.data.topicsWatched[topicWatched];
         let words = ProfileStore.data.allTopics[topicWatched].slice(0, 3).map(x => x.word).join(' ');
@@ -605,6 +607,7 @@ const ProfileStore: ProfileStoreData = {
     },
     computeTopics() {
       const data = ProfileStore.data.api.allTopics;
+      ProfileStore.data.allTopics = {};
       if (data) {
         for (let element of data) {
           if (!(element.topic_id in ProfileStore.data.allTopics)) {
