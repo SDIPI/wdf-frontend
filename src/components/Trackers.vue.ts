@@ -32,7 +32,6 @@ export default Vue.extend({
       // Append anchor to body.
       document.body.appendChild(a);
       a.click();
-
     }
   },
   mounted() {

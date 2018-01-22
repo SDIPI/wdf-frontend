@@ -68,7 +68,15 @@ interface ProfileStoreData {
     watchedSites: any[],
     watchedDomains: any[],
     watchedKeyWords: {},
-    topics: {},
+    topicsWatched: {
+      [topicId: number] : number
+    },
+    allTopics: {
+      [topicId: number] : {
+        word: string,
+        probability: number
+      }[]
+    }
     historySites: any[],
     historyWords: any[],
     historyTopics: any[],
@@ -131,6 +139,12 @@ interface ProfileStoreData {
         realAmount: number,
         domains: number
       }[]
+    },
+    topicsPage: {
+      topics: {
+        amount: number,
+        words: string
+      }[]
     }
     urlsTopic: {},
     loading: boolean,
@@ -154,18 +168,14 @@ interface ProfileStoreData {
         words: {
           tfidf: number,
           word: string
-        }[]
+        }[],
+        topics: string
       }[],
-      topics?: {
-        keywords: {
-          [wordId: string]: {
-            topics: number[],
-            word: string
-          }},
-        topics: {
-          [topicId: string]: [string, number][]
-        }
-      },
+      allTopics?: {
+        topic_id: number,
+        value: number,
+        word: string
+      }[],
       historySites?: {
         day: string,
         sumAmount: number,
@@ -251,6 +261,7 @@ interface ProfileStoreData {
     trackersForm: {
       refreshNbHidden: () => void
     }
+    computeWatchedTopics: () => void
   }
 }
 
@@ -262,7 +273,8 @@ const ProfileStore: ProfileStoreData = {
     watchedSites: [],
     watchedDomains: [],
     watchedKeyWords: {},
-    topics: [],
+    topicsWatched: {},
+    allTopics: {},
     historySites: [],
     historyWords: [],
     historyTopics: [],
@@ -302,6 +314,9 @@ const ProfileStore: ProfileStoreData = {
     trackersPage: {
       mostSending: [],
       mostRecieving: []
+    },
+    topicsPage: {
+      topics: []
     },
     urlsTopic: {},
     loading: true,
@@ -380,7 +395,28 @@ const ProfileStore: ProfileStoreData = {
         }).slice(0, 10);
         ProfileStore.data.watchedSites = sortedUrls;
         ProfileStore.data.watchedDomains = sortedDomains;
+        for (let site of data) {
+          let siteTopics: {[topicId: number]: number} = JSON.parse(site.topics);
+          for (let topicStr in siteTopics) {
+            let topic = parseInt(topicStr);
+            if (!(topic in ProfileStore.data.topicsWatched)) {
+              ProfileStore.data.topicsWatched[topic] = 0;
+            }
+            ProfileStore.data.topicsWatched[topic] += siteTopics[topic] * site.time;
+          }
+        }
       }
+    },
+
+    computeWatchedTopics() {
+      for (let topicWatched in ProfileStore.data.topicsWatched) {
+        let topicValue = ProfileStore.data.topicsWatched[topicWatched];
+        let words = ProfileStore.data.allTopics[topicWatched].slice(0, 3).map(x => x.word).join(' ');
+        ProfileStore.data.topicsPage.topics.push({amount: topicValue, words: words});
+      }
+      ProfileStore.data.topicsPage.topics.sort((a, b) => {
+        return (b.amount - a.amount)
+      });
     },
 
     // NB DOCUMENTS
@@ -561,16 +597,26 @@ const ProfileStore: ProfileStoreData = {
 
     // TOPICS
     refreshTopics() {
-      return fetch(ProfileStore.data.apiBase + "/api/topics", {credentials: 'include'})
+      return fetch(ProfileStore.data.apiBase + "/api/allTopics", {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
-          ProfileStore.data.api.topics = data;
+          ProfileStore.data.api.allTopics = data;
         });
     },
     computeTopics() {
-      const data = ProfileStore.data.api.topics;
+      const data = ProfileStore.data.api.allTopics;
       if (data) {
-        ProfileStore.data.topics = data;
+        for (let element of data) {
+          if (!(element.topic_id in ProfileStore.data.allTopics)) {
+            ProfileStore.data.allTopics[element.topic_id] = [];
+          }
+          ProfileStore.data.allTopics[element.topic_id].push({word: element.word, probability: element.value});
+        }
+        for (let topicId in ProfileStore.data.allTopics) {
+          ProfileStore.data.allTopics[topicId].sort((a, b) => {
+            return (b.probability - a.probability)
+          })
+        }
       }
     },
 
@@ -661,6 +707,7 @@ const ProfileStore: ProfileStoreData = {
             ProfileStore.methods.computeWords();
             ProfileStore.methods.computeHistory();
             ProfileStore.methods.computeTopics();
+            ProfileStore.methods.computeWatchedTopics();
             ProfileStore.data.loading = false;
           });
 

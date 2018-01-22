@@ -1,10 +1,12 @@
 <template>
   <div>
     <div class="row">
-      <div class="col-9">
+      <div class="col-12">
         <h2 class="mb-0">Topics graph</h2>
-        <div ref="mynetwork" id="mynetwork"></div>
+        <BarList :list="ProfileStore.topicsPage.topics" :labels="['Words', 'Amount']"
+                         :keyLabel="'words'" :keyValue="'amount'"></BarList>
       </div>
+      <!--
       <div class="col-3" v-if="ProfileStore.graph.selected">
         <h3 class="mb-0">Selected</h3>
         Topic <b>{{ProfileStore.graph.selected}}</b><br/>
@@ -19,7 +21,7 @@
           <span class="hint badge badge-secondary" data-toggle="tooltip" data-placement="bottom"
               title="You can help us classify topics and words by assigning one of your interests to any word or topic you think go together well.">What is this ?</span>
         </p>
-      </div>
+      </div>-->
     </div>
     <p>
       <span class="hint badge badge-secondary" data-toggle="tooltip" data-placement="bottom"
@@ -33,6 +35,7 @@
   import ProfileStore from "../../stores/ProfileStore";
   import BarList from "../BarList.vue";
   import TableList from "../TableList.vue";
+  import BarExtendedList from "../BarExtendedList.vue";
   import Vue from "vue";
 
   function enableTooltips() {
@@ -45,7 +48,8 @@
     name: 'Graph',
     components: {
       TableList,
-      BarList
+      BarList,
+      BarExtendedList
     },
     data() {
       return {
@@ -76,80 +80,7 @@
       }
     },
     mounted() {
-
       enableTooltips();
-
-      let topics = [];
-      let keywords = [];
-      let keywordsDict = {};
-      let connections = [];
-      let interests = ProfileStore.data.topics;
-
-      console.log("?????");
-
-      for (let topicId in interests['topics']) {
-        let topic = interests['topics'][topicId];
-        topics.push({
-          id: "t" + topicId,
-          label: '<b>' + topic[0][0] + '</b>\n' + topic[1][0] + '\n' + topic[2][0],
-          color: 'red',
-          font: {
-            multi: 'html',
-            color: 'white'
-          }
-        });
-        keywordsDict["t" + topicId] = topic[0][0] + ' ' + topic[1][0] + ' ' + topic[2][0];
-      }
-
-      /*
-      for (let wordId in interests['keywords']) {
-        let word = interests['keywords'][wordId];
-        keywords.push({id: "w" + wordId, label: word['word'], color: '#007bff', 'font':{color:'white'}});
-        keywordsDict["w" + wordId] = word['word'];
-        for (let link in word['topics']) {
-          connections.push({from: "w" +  wordId, to: "t" + word['topics'][link][0]});
-        }
-      }*/
-
-      console.log(topics);
-      console.log(keywords);
-
-      this.$data.keywordsDict = keywordsDict;
-
-      var nodes = new vis.DataSet(topics);
-
-      // create an array with edges
-      var edges = new vis.DataSet(connections);
-
-      // create a network
-      var container = this.$refs.mynetwork;
-      var data = {
-        nodes: nodes
-      };
-      var options = {};
-      var network = new vis.Network(container, data, options);
-
-      var self = this;
-      var ps = ProfileStore;
-
-      network.on("selectNode", function (params) {
-        console.log('selectNode Event:', params);
-        ps.data.graph.selected = self.keywordsDict[params['nodes'][0]];//self.keywordsDict[params];
-        if (self.$refs.interestField) {
-          let value = -1;
-          for (let i in ProfileStore.data.api.getTags) {
-            let tag = ProfileStore.data.api.getTags[i];
-            console.log("test");
-            if (tag.word === ps.data.graph.selected) {
-              value = tag.interest_id;
-            }
-          }
-          self.$refs.interestField.value = value;
-          ProfileStore.data.graph.formChanged = false;
-        }
-        enableTooltips();
-      });
-
     },
     beforeDestroy() {
       ProfileStore.data.graph.selected = false;
