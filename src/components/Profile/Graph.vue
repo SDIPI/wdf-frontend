@@ -2,9 +2,13 @@
   <div>
     <div class="row">
       <div class="col-12">
-        <h2 class="mb-0">Topics graph</h2>
-        <BarList :list="ProfileStore.topicsPage.topics" :labels="['Words', 'Amount']"
-                         :keyLabel="'words'" :keyValue="'amount'"></BarList>
+        <h2 class="mb-0">Topics List</h2>
+        <SelectList
+          :list="ProfileStore.topicsPage.topics"
+          :labels="['Words', 'Related interest']"
+          :keyLabel="'words'"
+          :keyValue="'amount'"
+          :cbChanged="(function (topicId, topic) {selectChanged(topicId, topic);})"></SelectList>
       </div>
       <!--
       <div class="col-3" v-if="ProfileStore.graph.selected">
@@ -26,16 +30,14 @@
     <p>
       <span class="hint badge badge-secondary" data-toggle="tooltip" data-placement="bottom"
             title="This page shows a guess at which topics and words you're the probably the most interested to.
-            Each red bubble is a topic, each blue bubble is a word. A topic is linked to multiple words.">What is this ?</span>
+            A 'topic' is a combination of multiple words. You can help us by assigning some of your interests to topics you find relevant.">What is this ?</span>
     </p>
   </div>
 </template>
 
 <script>
   import ProfileStore from "../../stores/ProfileStore";
-  import BarList from "../BarList.vue";
-  import TableList from "../TableList.vue";
-  import BarExtendedList from "../BarExtendedList.vue";
+  import SelectList from "../SelectList.vue";
   import Vue from "vue";
 
   function enableTooltips() {
@@ -47,9 +49,7 @@
   export default Vue.extend({
     name: 'Graph',
     components: {
-      TableList,
-      BarList,
-      BarExtendedList
+      SelectList
     },
     data() {
       return {
@@ -59,18 +59,17 @@
       };
     },
     methods: {
-      sendTag() {
-        ProfileStore.methods.sendTag(ProfileStore.data.graph.interest, ProfileStore.data.graph.selected).then(() => {
-          this.showalert("Related interest saved successfully.", 'success');
-          ProfileStore.data.graph.formChanged = false;
+      selectChanged(e, value) {
+        console.log(e.target.value);
+        console.log(value);
+        ProfileStore.data.loading = true;
+        ProfileStore.methods.sendTag(value.topicId ,e.target.value, value.words).then(() => {
+          ProfileStore.methods.refreshCurrentTags().then(() => {
+            ProfileStore.methods.computeTags();
+            ProfileStore.data.loading = false;
+            this.showalert("Related interest saved successfully.", 'success');
+          });
         });
-      },
-      selectChanged() {
-        if (this.$refs.interestField) {
-          console.log(this.$refs.interestField.value);
-          ProfileStore.data.graph.interest = this.$refs.interestField.value;
-          ProfileStore.data.graph.formChanged = true;
-        }
       },
       showalert(message, alerttype) {
         $('#alert_placeholder').append('<div id="alertdiv" class="alert alert-' + alerttype + '"><a class="close" data-dismiss="alert">×</a><span>' + message + '</span></div>')

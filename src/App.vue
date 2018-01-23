@@ -92,6 +92,10 @@
     line-height: 2em;
   }
 
+  #alertdiv {
+    display: inline-table;
+  }
+
   .hint {
     opacity: 0.4;
   }

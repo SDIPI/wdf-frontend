@@ -89,6 +89,11 @@ interface ProfileStoreData {
     oldest?: string | null,
     connected?: boolean | null,
     wdfId: number,
+    currentTags: {[topicId: number]: number},
+    tags: {
+      interestId: number,
+      words: string
+    }[],
     filterForm: {
       startDate?: string | null,
       endDate?: string | null
@@ -143,7 +148,8 @@ interface ProfileStoreData {
     topicsPage: {
       topics: {
         amount: number,
-        words: string
+        words: string,
+        topicId: number
       }[]
     }
     urlsTopic: {},
@@ -205,6 +211,11 @@ interface ProfileStoreData {
         user_id: number,
         word: string
       }[],
+      getCurrentTags?: {
+        interest_id: number,
+        user_id: number,
+        topic_id: number
+      }[],
       getTrackers?: {
         amount: number,
         reqDomain: string,
@@ -252,8 +263,10 @@ interface ProfileStoreData {
     computeUrlsTopic: () => void,
     refreshEverything: (boolean) => Promise<any>,
     sendInterests: (any) => Promise<any>,
-    sendTag: (number, string) => Promise<any>,
+    sendTag: (topicId: number, interestId: number, words: string) => Promise<any>,
     refreshTags: () => Promise<any>,
+    computeTags: () => void,
+    refreshCurrentTags: () => Promise<any>,
     refreshTrackersStats: (any) => Promise<any>,
     refreshGeneralStats: () => Promise<any>,
     refreshTrackers: () => Promise<any>,
@@ -283,6 +296,8 @@ const ProfileStore: ProfileStoreData = {
     tfIdfByDomain: {},
     bestKeyWords: {},
     interestsList: [],
+    currentTags: {},
+    tags: [],
     nbDocuments: null,
     oldest: null,
     connected: null,
@@ -414,11 +429,12 @@ const ProfileStore: ProfileStoreData = {
       for (let topicWatched in ProfileStore.data.topicsWatched) {
         let topicValue = ProfileStore.data.topicsWatched[topicWatched];
         let words = ProfileStore.data.allTopics[topicWatched].slice(0, 3).map(x => x.word).join(' ');
-        ProfileStore.data.topicsPage.topics.push({amount: topicValue, words: words});
+        ProfileStore.data.topicsPage.topics.push({amount: topicValue, words: words, topicId: parseInt(topicWatched)});
       }
       ProfileStore.data.topicsPage.topics.sort((a, b) => {
         return (b.amount - a.amount)
       });
+      ProfileStore.data.topicsPage.topics = ProfileStore.data.topicsPage.topics.splice(0, 20);
     },
 
     // NB DOCUMENTS
@@ -691,6 +707,7 @@ const ProfileStore: ProfileStoreData = {
           let topicsP = ProfileStore.methods.refreshTopics();
 
           let tagsP = ProfileStore.methods.refreshTags();
+          let currentTagsP = ProfileStore.methods.refreshCurrentTags();
 
           /*let trackers1P = ProfileStore.methods.refreshMostPresentTrackers(dates);
           let trackers2P = ProfileStore.methods.refreshMostRevealingDomains(dates);*/
@@ -700,12 +717,13 @@ const ProfileStore: ProfileStoreData = {
 
           let generalStatsP = ProfileStore.methods.refreshGeneralStats();
 
-          Promise.all([visitedSitesP, watchedSitesP, userInterestsP, urlsTopicP, historyP, topicsP, iListP, tagsP]).then(() => {
+          Promise.all([visitedSitesP, watchedSitesP, userInterestsP, urlsTopicP, historyP, topicsP, iListP, tagsP, currentTagsP]).then(() => {
             ProfileStore.methods.computeVisitedSites();
             ProfileStore.methods.computeWatchedSites();
             ProfileStore.methods.computeInterestsList();
             ProfileStore.methods.computeUserInterests();
             ProfileStore.methods.computeUrlsTopic();
+            ProfileStore.methods.computeTags();
 
             ProfileStore.methods.computeWords();
             ProfileStore.methods.computeHistory();
@@ -755,8 +773,8 @@ const ProfileStore: ProfileStoreData = {
     },
 
     // TAGS
-    sendTag(interestId: number, word: string) {
-      let queryString = "?interestId=" + interestId + "&word=" + word;
+    sendTag(topicId: number, interestId: number, words: string) {
+      let queryString = "?interestId=" + interestId + "&topicId=" + topicId + "&words=" + words;
       return fetch(ProfileStore.data.apiBase + "/api/setTag" + queryString, {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
@@ -770,6 +788,31 @@ const ProfileStore: ProfileStoreData = {
           ProfileStore.data.api.getTags = data;
         });
     },
+    refreshCurrentTags() {
+      return fetch(ProfileStore.data.apiBase + "/api/getCurrentTags", {credentials: 'include'})
+        .then(response => response.json())
+        .then((data) => {
+          ProfileStore.data.api.getCurrentTags = data;
+        });
+    },
+    computeTags() {
+      ProfileStore.data.currentTags = {};
+      ProfileStore.data.tags = [];
+      if (ProfileStore.data.api.getCurrentTags) {
+        for (let tag of ProfileStore.data.api.getCurrentTags) {
+          ProfileStore.data.currentTags[tag.topic_id] = tag.interest_id;
+        }
+      }
+      if (ProfileStore.data.api.getTags) {
+        for (let tag of ProfileStore.data.api.getTags) {
+          ProfileStore.data.tags.push({
+            interestId: tag.interest_id,
+            words: tag.word
+          });
+        }
+      }
+    },
+
 
     // TRACKERS
     refreshTrackers() {

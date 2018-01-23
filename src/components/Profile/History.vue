@@ -4,8 +4,8 @@
     <div id="highChartContainer3"></div>
     <h2 class="mb-0">History of words</h2>
     <div id="highChartContainer1"></div>
-    <h2 class="mb-0">History of sites</h2>
-    <div id="highChartContainer2"></div>
+    <h2 class="mb-0" style="display: none;">History of sites</h2>
+    <div id="highChartContainer2" style="display: none;"></div>
   </div>
 </template>
 
@@ -151,11 +151,6 @@
 
         series: dataHistorySites
       });
-
-
-
-
-
 
 
       Highcharts.chart('highChartContainer3', {
