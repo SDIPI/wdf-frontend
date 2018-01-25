@@ -5,6 +5,7 @@
       <th>#</th>
       <th>{{ labels[0] }}</th>
       <th>{{ labels[1] }}</th>
+      <th colspan="2">Estimated interest</th>
     </tr>
     </thead>
     <tbody>
@@ -19,6 +20,14 @@
                   :value="el.id"
                   :selected="ProfileStore.currentTags[element.topicId] == el.id">{{el.label}}</option>
         </select>
+      </td>
+      <td>
+        {{Math.round(element.amount / list[0].amount * 100)}}%
+      </td>
+      <td class="middle bar">
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" :style="'width: ' + (element['amount']*100/maxValue) + '%;'" :aria-valuenow="element['amount']*100/maxValue" aria-valuemin="0" :aria-valuemax="maxValue"></div>
+        </div>
       </td>
     </tr>
     </tbody>
@@ -36,7 +45,7 @@
     },
     computed: {
       maxValue() {
-        return this.list[0][this.keyValue]
+        return this.list[0]['amount']
       }
     }
   }
