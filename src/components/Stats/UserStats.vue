@@ -18,7 +18,7 @@
   import TableList from "../TableList.vue";
 
   export default {
-    name: 'Stats',
+    name: 'UserStats',
     components: {
       TableList,
       BarList,

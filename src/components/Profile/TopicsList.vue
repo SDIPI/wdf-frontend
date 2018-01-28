@@ -10,22 +10,6 @@
           :keyValue="'amount'"
           :cbChanged="(function (topicId, topic) {selectChanged(topicId, topic);})"></SelectList>
       </div>
-      <!--
-      <div class="col-3" v-if="ProfileStore.graph.selected">
-        <h3 class="mb-0">Selected</h3>
-        Topic <b>{{ProfileStore.graph.selected}}</b><br/>
-        Related interest : <select ref="interestField" v-on:change="selectChanged()">
-          <option value="-1"></option>
-          <option v-for="el in ProfileStore.interestsList" v-if="ProfileStore.settingsForm.interests.indexOf(el.id) > -1" :value="el.id">{{el.label}}</option>
-        </select>
-        <br/>
-        <button v-if="ProfileStore.graph.formChanged" type="submit" v-on:click="sendTag()" class="btn btn-primary">Submit</button>
-        <br/>
-        <p>
-          <span class="hint badge badge-secondary" data-toggle="tooltip" data-placement="bottom"
-              title="You can help us classify topics and words by assigning one of your interests to any word or topic you think go together well.">What is this ?</span>
-        </p>
-      </div>-->
     </div>
     <p>
       <span class="hint badge badge-secondary" data-toggle="tooltip" data-placement="bottom"
@@ -47,7 +31,7 @@
   }
 
   export default Vue.extend({
-    name: 'Graph',
+    name: 'Topics',
     components: {
       SelectList
     },

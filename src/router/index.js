@@ -1,18 +1,23 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
+import General from '@/components/General'
+
 import Profile from '@/components/Profile'
 import WordCloud from '@/components/Profile/WordCloud'
-import Graph from '@/components/Profile/Graph'
+import TopicsList from '@/components/Profile/TopicsList'
 import MostVisited from '@/components/Profile/MostVisited'
 import MostWatched from '@/components/Profile/MostWatched'
 import History from '@/components/Profile/History'
-import Contacted from '@/components/Trackers/Contacted'
-import Flow from '@/components/Trackers/Flow'
-import TrackerStats from '@/components/Trackers/Stats'
-import Widespread from '@/components/Trackers/Widespread'
-import General from '@/components/General'
+
 import Trackers from '@/components/Trackers'
+import Contacted from '@/components/Trackers/Contacted'
+import Widespread from '@/components/Trackers/Widespread'
+
 import Stats from '@/components/Stats'
+import UserStats from '@/components/Stats/UserStats'
+import GlobalStats from '@/components/Stats/GlobalStats'
+
 import Settings from '@/components/Settings'
 
 Vue.use(Router);
@@ -39,16 +44,6 @@ export default new Router({
           component: Contacted
         },
         {
-          path: 'flow',
-          name: 'Flow',
-          component: Flow
-        },
-        {
-          path: 'stats',
-          name: 'TrackerStats',
-          component: TrackerStats
-        },
-        {
           path: 'send',
           name: 'Widespread',
           component: Widespread
@@ -70,9 +65,9 @@ export default new Router({
           component: WordCloud
         },
         {
-          path: 'graph',
-          name: 'Graph',
-          component: Graph
+          path: 'topics',
+          name: 'TopicsList',
+          component: TopicsList
         },
         {
           path: 'mostvisited',
@@ -94,7 +89,23 @@ export default new Router({
     {
       path: '/stats',
       name: 'Stats',
-      component: Stats
+      component: Stats,
+      children: [
+        {
+          path: '',
+          redirect: 'user'
+        },
+        {
+          path: 'user',
+          name: 'UserStats',
+          component: UserStats
+        },
+        {
+          path: 'global',
+          name: 'GlobalStats',
+          component: GlobalStats
+        }
+      ]
     },
     {
       path: '/settings',

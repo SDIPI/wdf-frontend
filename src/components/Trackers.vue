@@ -18,9 +18,6 @@
               <span v-if="ProfileStore.trackersForm.nbHiddenRecieving > 0" class="badge badge-warning">{{ProfileStore.trackersForm.nbHiddenRecieving}} hidden</span>
             </router-link>
           </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/trackers/stats">Stats</router-link>
-          </li>
         </ul>
       </div>
 

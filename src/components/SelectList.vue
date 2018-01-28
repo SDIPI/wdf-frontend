@@ -21,7 +21,7 @@
                   :selected="ProfileStore.currentTags[element.topicId] == el.id">{{el.label}}</option>
         </select>
       </td>
-      <td>
+      <td class="middle">
         {{Math.round(element.amount / list[0].amount * 100)}}%
       </td>
       <td class="middle bar">

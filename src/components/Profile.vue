@@ -10,7 +10,7 @@
             <router-link class="nav-link" to="/profile/wordcloud">Wordcloud</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/profile/graph">Topics List</router-link>
+            <router-link class="nav-link" to="/profile/topics">Topics List</router-link>
           </li>
           <li class="nav-item">
             <router-link class="nav-link" to="/profile/mostvisited">Most Visited</router-link>
