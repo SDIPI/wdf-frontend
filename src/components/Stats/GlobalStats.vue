@@ -1,6 +1,6 @@
 <template>
-  <div id="stats">
-    <h1 class="mb-0">Global stats</h1>
+  <div>
+    <h2 class="mb-0">Global stats</h2>
     <div v-if="!ProfileStore.loadingTrackers" class="router-view">
       <div class="row">
         <div class="col-sm">
@@ -47,11 +47,4 @@
 </script>
 
 <style>
-  #stats {
-    margin-top: 4px;
-  }
-
-  .router-view {
-    margin-top: 14px;
-  }
 </style>

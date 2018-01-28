@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h2 class="mb-0">Trackers stats</h2>
-    <div class="card bg-light mb-3" style="max-width: 20rem;">
+    <h2 class="mb-0">Your stats</h2>
+    <div class="card bg-light mb-3 router-view" style="max-width: 20rem;">
       <div class="card-header">Trackers</div>
       <div class="card-body">
         <h4 class="card-title">{{ ProfileStore.api.getTrackersStats.nbTrackers }}</h4>
@@ -34,5 +34,4 @@
 </script>
 
 <style>
-
 </style>

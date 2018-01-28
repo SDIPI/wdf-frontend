@@ -4,8 +4,6 @@
     <div id="highChartContainer3"></div>
     <h2 class="mb-0">History of words</h2>
     <div id="highChartContainer1"></div>
-    <h2 class="mb-0" style="display: none;">History of sites</h2>
-    <div id="highChartContainer2" style="display: none;"></div>
   </div>
 </template>
 
@@ -69,19 +67,18 @@
         },
         yAxis: {
           title: {
-            text: 'Time'
+            text: 'Time [sec]'
           },
           min: 0
         },
         tooltip: {
           headerFormat: '<b>{series.name}</b><br>',
           pointFormatter: function() {
-            var timeStr = toTime(this.y);
-            var timeValue = new Date(this.x);
-            console.log(timeValue);
-            return `${timeValue.getDay()+3}.${timeValue.getUTCMonth()+1}.${timeValue.getFullYear()}: ${timeStr}`;
-          }/*
-          pointFormat: '{point.x:%e. %b}: {point.y:.2f}'*/
+            let timeStr = toTime(this.y);
+            let timeValue = new Date(this.x);
+
+            return `${timeValue.getUTCDate()}.${timeValue.getUTCMonth()+1}.${timeValue.getUTCFullYear()}: ${timeStr}`;
+          }
         },
 
         plotOptions: {
@@ -98,58 +95,6 @@
         },
 
         series: dataHistoryWords
-      });
-
-      Highcharts.chart('highChartContainer2', {
-
-        chart: {
-          type: 'spline'
-        },
-        title: {
-          text: ''
-        },
-
-        xAxis: {
-          type: 'datetime',
-          dateTimeLabelFormats: { // don't display the dummy year
-            month: '%e. %b',
-            year: '%b'
-          },
-          title: {
-            text: 'Date'
-          }
-        },
-        yAxis: {
-          title: {
-            text: 'Time'
-          },
-          min: 0
-        },
-        tooltip: {
-          headerFormat: '<b>{series.name}</b><br>',
-          pointFormatter: function() {
-            var timeStr = toTime(this.y);
-            var timeValue = new Date(this.x);
-            console.log(timeValue);
-            return `${timeValue.getDay()+3}.${timeValue.getUTCMonth()+1}.${timeValue.getFullYear()}: ${timeStr}`;
-          }/*
-          pointFormat: '{point.x:%e. %b}: {point.y:.2f}'*/
-        },
-
-        plotOptions: {
-          spline: {
-            marker: {
-              enabled: true
-            }
-          },
-          series: {
-            dataLabels: {
-              enabled: false
-            }
-          }
-        },
-
-        series: dataHistorySites
       });
 
 
@@ -174,19 +119,18 @@
         },
         yAxis: {
           title: {
-            text: 'Time'
+            text: 'Time [sec]'
           },
           min: 0
         },
         tooltip: {
           headerFormat: '<b>{series.name}</b><br>',
           pointFormatter: function() {
-            var timeStr = toTime(this.y);
-            var timeValue = new Date(this.x);
+            let timeStr = toTime(this.y);
+            let timeValue = new Date(this.x);
             console.log(timeValue);
-            return `${timeValue.getDay()+3}.${timeValue.getUTCMonth()+1}.${timeValue.getFullYear()}: ${timeStr}`;
-          }/*
-          pointFormat: '{point.x:%e. %b}: {point.y:.2f}'*/
+            return `${timeValue.getUTCDate()}.${timeValue.getUTCMonth()+1}.${timeValue.getUTCFullYear()}: ${timeStr}`;
+          }
         },
 
         plotOptions: {

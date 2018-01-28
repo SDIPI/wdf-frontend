@@ -61,10 +61,6 @@
 
     update();
 
-    /*window.onresize = function(event) {
-      update();
-    };*/
-
     function draw(data, bounds) {
       var w = 1100,
         h = 600;

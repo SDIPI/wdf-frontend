@@ -2,11 +2,6 @@ import ProfileStore from "./stores/ProfileStore";
 import "./filters";
 import Vue from "vue";
 
-function sealed(constructor: Function) {
-  Object.seal(constructor);
-  Object.seal(constructor.prototype);
-}
-
 export default Vue.extend({
   name: 'app',
   data() {
@@ -17,7 +12,8 @@ export default Vue.extend({
   methods: {
   },
   beforeMount() {
-    let oldestP = ProfileStore.methods.refreshOldest().then(() => {
+    // We need to know the earliest day before mounting the element
+    ProfileStore.methods.refreshOldest().then(() => {
       ProfileStore.methods.computeOldest();
       ProfileStore.data.filterForm.startDate = ProfileStore.data.oldest;
     });
