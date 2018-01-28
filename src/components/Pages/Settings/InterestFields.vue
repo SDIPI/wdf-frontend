@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  import ProfileStore from "../../stores/ProfileStore";
+  import ProfileStore from "../../../stores/ProfileStore";
 
   let eventHandler = function(name) {
     return function() {

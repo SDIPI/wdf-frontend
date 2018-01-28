@@ -14,7 +14,7 @@
 </template>
 
 <script>
-  import ProfileStore from "../../stores/ProfileStore";
+  import ProfileStore from "../../../stores/ProfileStore";
 
   function tfIdf(tf, df, documents) {
     return tf * Math.log(documents / df);

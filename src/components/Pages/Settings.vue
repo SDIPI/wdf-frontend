@@ -18,7 +18,7 @@
 </template>
 
 <script>
-  import ProfileStore from "../stores/ProfileStore";
+  import ProfileStore from "../../stores/ProfileStore";
   import InterestFields from "./Settings/InterestFields";
 
   function enableTooltips() {

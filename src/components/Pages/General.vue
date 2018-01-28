@@ -27,7 +27,7 @@
 </template>
 
 <script>
-  import ProfileStore from "../stores/ProfileStore";
+  import ProfileStore from "../../stores/ProfileStore";
 
   export default {
     name: 'General',

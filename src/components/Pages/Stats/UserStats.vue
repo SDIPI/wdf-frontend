@@ -12,10 +12,10 @@
 </template>
 
 <script>
-  import ProfileStore from "../../stores/ProfileStore";
-  import BarList from "../BarList.vue";
-  import BarExtendedList from "../BarExtendedList.vue";
-  import TableList from "../TableList.vue";
+  import ProfileStore from "../../../stores/ProfileStore";
+  import BarList from "../../BarList.vue";
+  import BarExtendedList from "../../BarExtendedList.vue";
+  import TableList from "../../TableList.vue";
 
   export default {
     name: 'UserStats',

@@ -20,8 +20,8 @@
 </template>
 
 <script>
-  import ProfileStore from "../../stores/ProfileStore";
-  import SelectList from "../SelectList.vue";
+  import ProfileStore from "../../../stores/ProfileStore";
+  import SelectList from "../../SelectList.vue";
   import Vue from "vue";
 
   function enableTooltips() {
@@ -44,8 +44,6 @@
     },
     methods: {
       selectChanged(e, value) {
-        console.log(e.target.value);
-        console.log(value);
         ProfileStore.data.loading = true;
         ProfileStore.methods.sendTag(value.topicId ,e.target.value, value.words).then(() => {
           ProfileStore.methods.refreshCurrentTags().then(() => {

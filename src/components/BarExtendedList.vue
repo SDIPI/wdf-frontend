@@ -30,7 +30,6 @@
     props: ['list', 'labels', 'keyLabel', 'keyValue1', 'keyValue2', 'valueF1', 'valueF2', 'linkLabels', 'linkPrefix'],
     computed: {
       maxValue() {
-        console.log(this.list);
         return this.list[0][this.keyValue2]
       }
     },

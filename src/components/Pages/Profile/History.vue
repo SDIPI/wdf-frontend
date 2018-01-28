@@ -8,9 +8,9 @@
 </template>
 
 <script>
-  import ProfileStore from "../../stores/ProfileStore";
-  import BarList from "../BarList.vue";
-  import TableList from "../TableList.vue";
+  import ProfileStore from "../../../stores/ProfileStore";
+  import BarList from "../../BarList.vue";
+  import TableList from "../../TableList.vue";
 
   function toTime(sec) {
     if (sec < 60) {
@@ -128,7 +128,6 @@
           pointFormatter: function() {
             let timeStr = toTime(this.y);
             let timeValue = new Date(this.x);
-            console.log(timeValue);
             return `${timeValue.getUTCDate()}.${timeValue.getUTCMonth()+1}.${timeValue.getUTCFullYear()}: ${timeStr}`;
           }
         },

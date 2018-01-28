@@ -1,24 +1,24 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import General from '@/components/General'
+import General from '@/components/Pages/General'
 
-import Profile from '@/components/Profile'
-import WordCloud from '@/components/Profile/WordCloud'
-import TopicsList from '@/components/Profile/TopicsList'
-import MostVisited from '@/components/Profile/MostVisited'
-import MostWatched from '@/components/Profile/MostWatched'
-import History from '@/components/Profile/History'
+import Profile from '@/components/Pages/Profile'
+import WordCloud from '@/components/Pages/Profile/WordCloud'
+import TopicsList from '@/components/Pages/Profile/TopicsList'
+import MostVisited from '@/components/Pages/Profile/MostVisited'
+import MostWatched from '@/components/Pages/Profile/MostWatched'
+import History from '@/components/Pages/Profile/History'
 
-import Trackers from '@/components/Trackers'
-import Contacted from '@/components/Trackers/Contacted'
-import Widespread from '@/components/Trackers/Widespread'
+import Trackers from '@/components/Pages/Trackers'
+import Contacted from '@/components/Pages/Trackers/Contacted'
+import Widespread from '@/components/Pages/Trackers/Widespread'
 
-import Stats from '@/components/Stats'
-import UserStats from '@/components/Stats/UserStats'
-import GlobalStats from '@/components/Stats/GlobalStats'
+import Stats from '@/components/Pages/Stats'
+import UserStats from '@/components/Pages/Stats/UserStats'
+import GlobalStats from '@/components/Pages/Stats/GlobalStats'
 
-import Settings from '@/components/Settings'
+import Settings from '@/components/Pages/Settings'
 
 Vue.use(Router);
 

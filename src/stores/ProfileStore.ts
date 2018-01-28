@@ -498,8 +498,6 @@ const ProfileStore: ProfileStoreData = {
         for (let el in result) {
           resultList2.push({name: el, data:result[el]});
         }
-        console.log(result);
-        console.log(resultList2);
         resultList2 = resultList2.splice(0,5);
         ProfileStore.data.historySites = resultList2;
         /* --- History by topic --- */
@@ -533,8 +531,6 @@ const ProfileStore: ProfileStoreData = {
         });
         topicTotalList = topicTotalList.splice(0, 10);
         let topTopics = topicTotalList.map(key => {return key['topic']});
-        console.log("TOPICS : ! : ! ");
-        console.log(topTopics);
         for (let el in resultTopics) {
           let resultTopic = resultTopics[el];
           let resultTopicList: {data: any[], name: string}[] = [];
@@ -547,8 +543,6 @@ const ProfileStore: ProfileStoreData = {
             resultTopicsList.push({name: el, data:dataTopicList});
           }
         }
-        console.log(resultTopics);
-        console.log(resultTopicsList);
         ProfileStore.data.historyTopics = resultTopicsList;
       }
     },
@@ -628,7 +622,6 @@ const ProfileStore: ProfileStoreData = {
           item['label'] = hierarchy[hierarchy.length - 1];
           result.push(item);
         });
-        console.log("Heh");
         ProfileStore.data.interestsList = result;
       }
     },
@@ -708,7 +701,6 @@ const ProfileStore: ProfileStoreData = {
       return fetch(ProfileStore.data.apiBase + "/api/setInterests" + queryString, {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
-          console.log(data);
         });
     },
 
@@ -718,7 +710,6 @@ const ProfileStore: ProfileStoreData = {
       return fetch(ProfileStore.data.apiBase + "/api/setTag" + queryString, {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
-          console.log(data);
         });
     },
     refreshTags() {
@@ -768,7 +759,6 @@ const ProfileStore: ProfileStoreData = {
     },
 
     computeTrackers() {
-      console.log("START COMPUTE");
       ProfileStore.data.trackers = {};
       ProfileStore.data.trackersPage.mostRecieving = [];
       ProfileStore.data.trackersPage.mostSending = [];
