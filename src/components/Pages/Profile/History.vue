@@ -43,7 +43,6 @@
     mounted() {
 
       let dataHistoryWords = ProfileStore.data.historyWords;
-      let dataHistorySites = ProfileStore.data.historySites;
       let dataHistoryTopics = ProfileStore.data.historyTopics;
 
       Highcharts.chart('highChartContainer1', {

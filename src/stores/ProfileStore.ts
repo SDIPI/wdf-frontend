@@ -96,6 +96,9 @@ interface ProfileStoreData {
     loading: boolean,
     loadingTrackers: boolean,
     loadingStats: boolean,
+    stats: {
+      nbRequests: number
+    },
     api: {
       connectionState?: {
         wdfId: number
@@ -272,6 +275,9 @@ const ProfileStore: ProfileStoreData = {
     },
     topicsPage: {
       topics: []
+    },
+    stats: {
+      nbRequests: 0
     },
     urlsTopic: {},
     loading: true,
@@ -762,6 +768,7 @@ const ProfileStore: ProfileStoreData = {
       ProfileStore.data.trackers = {};
       ProfileStore.data.trackersPage.mostRecieving = [];
       ProfileStore.data.trackersPage.mostSending = [];
+      ProfileStore.data.stats.nbRequests = 0;
 
       if (!ProfileStore.data.api.getTrackers) return;
       for (let flux of ProfileStore.data.api.getTrackers) {
@@ -795,6 +802,8 @@ const ProfileStore: ProfileStoreData = {
           let toSize = 0;
           let toDomains = 0;
           let toRealAmount = ProfileStore.data.trackers[from][to].amount;
+
+          ProfileStore.data.stats.nbRequests += toRealAmount;
 
           if (ProfileStore.data.trackersForm.active.from[from] && ProfileStore.data.trackersForm.active.to[to]) {
             toDomains++;
