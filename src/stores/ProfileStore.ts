@@ -96,6 +96,7 @@ interface ProfileStoreData {
     loading: boolean,
     loadingTrackers: boolean,
     loadingStats: boolean,
+    topicsByUrl: {[url: string]: {[topicId: number]: number}},
     stats: {
       nbRequests: number
     },
@@ -202,8 +203,6 @@ interface ProfileStoreData {
     computeInterestsList: () => void,
     refreshUserInterests: () => Promise<any>,
     computeUserInterests: () => void,
-    refreshUrlsTopic: () => Promise<any>,
-    computeUrlsTopic: () => void,
     refreshEverything: (boolean) => Promise<any>,
     sendInterests: (any) => Promise<any>,
     sendTag: (topicId: number, interestId: number, words: string) => Promise<any>,
@@ -245,6 +244,7 @@ const ProfileStore: ProfileStoreData = {
     oldest: null,
     connected: null,
     wdfId: -1,
+    topicsByUrl: {},
     filterForm: {
       startDate: null,
       endDate: null
@@ -357,8 +357,10 @@ const ProfileStore: ProfileStoreData = {
         ProfileStore.data.watchedSites = sortedUrls;
         ProfileStore.data.watchedDomains = sortedDomains;
         ProfileStore.data.topicsWatched = {};
+        ProfileStore.data.topicsByUrl = {};
         for (let site of data) {
           let siteTopics: {[topicId: number]: number} = JSON.parse(site.topics);
+          ProfileStore.data.topicsByUrl[site.url] = siteTopics;
           for (let topicStr in siteTopics) {
             let topic = parseInt(topicStr);
             if (!(topic in ProfileStore.data.topicsWatched)) {
@@ -488,6 +490,8 @@ const ProfileStore: ProfileStoreData = {
           resultList.push({name: el.word, data:resultByWord[el.word]});
         }
         ProfileStore.data.historyWords = resultList;
+
+
         /* --- History by website --- */
         let result = {};
         let resultList2: any[] = [];
@@ -506,26 +510,32 @@ const ProfileStore: ProfileStoreData = {
         }
         resultList2 = resultList2.splice(0,5);
         ProfileStore.data.historySites = resultList2;
+
+
         /* --- History by topic --- */
         let resultTopics = {};
-        let resultTopicsList: any[] = [];
+        let resultTopicsList: {data: any[], name: string}[] = [];
         let topicTotal = {};
-        // data = data.splice(0,5);
         for (let entryI in data) {
           let entry = data[entryI];
           let newEl: [number, number] = [new Date(entry.day).getTime(), entry.sumAmount];
-          let topic = ProfileStore.data.urlsTopic[entry.url];
-          if (!(topic in resultTopics)) {
-            resultTopics[topic] = {};
+          // let topic = ProfileStore.data.urlsTopic[entry.url];
+          let topics = ProfileStore.data.topicsByUrl[entry.url];
+          for (let topicId in topics) {
+            let topicValue = topics[topicId];
+            let topicString = ProfileStore.data.allTopics[topicId].slice(0, 3).map(x => x.word).join(' ');
+            if (!(topicString in resultTopics)) {
+              resultTopics[topicString] = {};
+            }
+            if (!(newEl[0] in resultTopics[topicString])) {
+              resultTopics[topicString][newEl[0]] = 0;
+            }
+            if (!(topicString in topicTotal)) {
+              topicTotal[topicString] = 0;
+            }
+            resultTopics[topicString][newEl[0]] += entry.sumAmount;
+            topicTotal[topicString] += entry.sumAmount;
           }
-          if (!(newEl[0] in resultTopics[topic])) {
-            resultTopics[topic][newEl[0]] = 0;
-          }
-          if (!(topic in topicTotal)) {
-            topicTotal[topic] = 0;
-          }
-          resultTopics[topic][newEl[0]] += newEl[1];
-          topicTotal[topic] += entry.sumAmount;
         }
         delete resultTopics["undefined"]; // :thinking:
         let topicTotalList: any[] = [];
@@ -535,11 +545,10 @@ const ProfileStore: ProfileStoreData = {
         topicTotalList.sort((a, b) => {
           return (b['value'] - a['value'])
         });
-        topicTotalList = topicTotalList.splice(0, 10);
+        topicTotalList = topicTotalList.splice(0, 8);
         let topTopics = topicTotalList.map(key => {return key['topic']});
         for (let el in resultTopics) {
           let resultTopic = resultTopics[el];
-          let resultTopicList: {data: any[], name: string}[] = [];
           let dataTopicList: any[] = [];
           if (topTopics.indexOf(el) > -1) {
             let dataTopic = Object.keys(resultTopic).map(key => {
@@ -576,23 +585,6 @@ const ProfileStore: ProfileStoreData = {
             return (b.probability - a.probability)
           })
         }
-      }
-    },
-
-    // URL TOPICS
-    refreshUrlsTopic() {
-      return fetch(ProfileStore.data.apiBase + "/api/getUrlsTopic", {credentials: 'include'})
-        .then(response => response.json())
-        .then((data) => {
-          ProfileStore.data.api.getUrlsTopic = data;
-        });
-    },
-    computeUrlsTopic() {
-      const data = ProfileStore.data.api.getUrlsTopic;
-      if (data) {
-        let result = {};
-        data.map((el) => result[el.url] = el.topic);
-        ProfileStore.data.urlsTopic = result;
       }
     },
 
@@ -640,7 +632,6 @@ const ProfileStore: ProfileStoreData = {
           let watchedSitesP = ProfileStore.methods.refreshWatchedSites(dates);
           let iListP = ProfileStore.methods.refreshInterestsList();
           let userInterestsP = ProfileStore.methods.refreshUserInterests();
-          let urlsTopicP = ProfileStore.methods.refreshUrlsTopic();
 
           let historyP = ProfileStore.methods.refreshHistory(dates);
           let topicsP = ProfileStore.methods.refreshTopics();
@@ -648,25 +639,22 @@ const ProfileStore: ProfileStoreData = {
           let tagsP = ProfileStore.methods.refreshTags();
           let currentTagsP = ProfileStore.methods.refreshCurrentTags();
 
-          /*let trackers1P = ProfileStore.methods.refreshMostPresentTrackers(dates);
-          let trackers2P = ProfileStore.methods.refreshMostRevealingDomains(dates);*/
           let trackers3P = ProfileStore.methods.refreshTrackersStats(dates);
 
           let trackersP = ProfileStore.methods.refreshTrackers();
 
           let generalStatsP = ProfileStore.methods.refreshGeneralStats();
 
-          Promise.all([visitedSitesP, watchedSitesP, userInterestsP, urlsTopicP, historyP, topicsP, iListP, tagsP, currentTagsP]).then(() => {
+          Promise.all([visitedSitesP, watchedSitesP, userInterestsP, historyP, topicsP, iListP, tagsP, currentTagsP]).then(() => {
             ProfileStore.methods.computeVisitedSites();
             ProfileStore.methods.computeWatchedSites();
             ProfileStore.methods.computeInterestsList();
             ProfileStore.methods.computeUserInterests();
-            ProfileStore.methods.computeUrlsTopic();
             ProfileStore.methods.computeTags();
 
             ProfileStore.methods.computeWords();
-            ProfileStore.methods.computeHistory();
             ProfileStore.methods.computeTopics();
+            ProfileStore.methods.computeHistory();
             ProfileStore.methods.computeWatchedTopics();
             ProfileStore.data.loading = false;
           });
@@ -754,9 +742,6 @@ const ProfileStore: ProfileStoreData = {
     // TRACKERS
     refreshTrackers() {
       let apiUrl = ProfileStore.data.apiBase + "/api/getTrackers";
-      /*if (dates) {
-        apiUrl += "?from=" + ProfileStore.data.filterForm.startDate + "&to=" + ProfileStore.data.filterForm.endDate
-      }*/
       return fetch(apiUrl, {credentials: 'include'})
         .then(response => response.json())
         .then((data) => {
