@@ -222,7 +222,7 @@ interface ProfileStoreData {
 
 const ProfileStore: ProfileStoreData = {
   data: {
-    apiBase: "http://df.sdipi.ch:5000",
+    apiBase: "https://df.sdipi.ch",
     visitedSites: [],
     visitedDomains: [],
     watchedSites: [],
